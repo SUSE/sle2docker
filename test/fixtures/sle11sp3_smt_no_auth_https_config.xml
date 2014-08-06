@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<image schemaversion="6.1" name="sles-11-SP3-docker-guest">
+  <description type="system">
+    <author>Flavio Castelli</author>
+    <contact>fcastelli@suse.com</contact>
+    <specification>SLE 11 SP3 Docker image</specification>
+  </description>
+  <preferences>
+    <type image="docker" container="sles11sp3">
+      <machine>
+        <vmdisk/>
+        <vmnic interface="eth0" mode="veth"/>
+      </machine>
+    </type>
+    <version>1.0.0</version>
+    <packagemanager>zypper</packagemanager>
+    <rpm-check-signatures>false</rpm-check-signatures>
+    <rpm-force>true</rpm-force>
+    <locale>en_US</locale>
+    <keytable>us.map.gz</keytable>
+    <hwclock>utc</hwclock>
+    <timezone>US/Eastern</timezone>
+  </preferences>
+  <users group="root">
+    <user password="$1$wYJUgpM5$RXMMeASDc035eX.NbYWFl0" home="/root" name="root"/>
+  </users>
+  <repository type="rpm-md" imageinclude="true" alias="SLES11:SP3:Updates" >
+    <source path="https://my_smt.local/repo/$RCE/SLES11-SP3-Updates/sle-11-x86_64"/>
+  </repository>
+  <repository type="rpm-md" imageinclude="true" alias="SLES11:SP3:Pool" >
+    <source path="https://my_smt.local/repo/$RCE/SLES11-SP3-Pool/sle-11-x86_64"/>
+  </repository>
+  <packages type="image">
+    <package name="coreutils"/>
+    <package name="iputils"/>
+  </packages>
+  <packages type="bootstrap">
+    <package name="filesystem"/>
+    <package name="glibc-locale"/>
+    <package name="libstdc++6"/>
+    <package name="libgcc_s1"/>
+    <package name="openssl-certs" />
+  </packages>
+</image>

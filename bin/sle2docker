@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+require_relative '../lib/sle2docker'
+
+container = Sle2Docker::Cli.new.start()
+puts "Container created, it can be imported by running the following command:"
+puts "  docker import - <desired image name> < #{container}"
+puts "\nThen the '#{File.expand_path(File.join(File.dirname(container), '..'))}' directory and all its contents can be removed."
+puts "Note well: KIWI created some of these files while running as root user, " +
+     "hence root privileges are required to remove them."
