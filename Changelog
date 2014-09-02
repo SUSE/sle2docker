@@ -1,3 +1,7 @@
+Tue Sep 02 08:19:22 CEST 2014  Flavio Castelli <fcastelli@suse.com>
+
+	* Version 0.1.2: made template name case insensitive
+
 Thu Aug 07 11:10:26 CEST 2014  Flavio Castelli <fcastelli@suse.com>
 
 	* Version 0.1.1: added SLE12 template
