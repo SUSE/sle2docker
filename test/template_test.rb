@@ -4,7 +4,7 @@ class TemplateTest < MiniTest::Test
 
   def test_list
     actual = Sle2Docker::Template.list
-    expected = ['SLE11SP2', 'SLE11SP3']
+    expected = ['SLE11SP2', 'SLE11SP3', 'SLE12']
     assert_equal expected.sort, actual.sort
   end
 
