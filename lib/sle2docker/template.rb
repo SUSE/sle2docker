@@ -9,7 +9,7 @@ module Sle2Docker
     end
 
     def self.template_dir(template_name)
-      dir = File.expand_path("../../templates/#{template_name}", __FILE__)
+      dir = File.expand_path("../../templates/#{template_name.upcase}", __FILE__)
       if !File.exists?(dir)
         raise TemplateNotFoundError.new("Cannot find template with name #{template_name}")
       end

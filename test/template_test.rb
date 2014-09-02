@@ -19,5 +19,12 @@ class TemplateTest < MiniTest::Test
     assert File.exist?(dir)
   end
 
+  def test_find_should_be_case_insensitive
+    dir = Sle2Docker::Template.template_dir(
+      Sle2Docker::Template.list.first.downcase)
+    assert File.exist?(dir)
+  end
+
+
 end
 
