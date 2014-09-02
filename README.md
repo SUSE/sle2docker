@@ -18,17 +18,21 @@ have the rights to interact with it.
 
 # Installation
 
-sle2docker can be installed from rpm packages using zypper or using the
-gem utility.
+The recommended way to install sle2docker is via zypper:
 
-Note well: when installing sle2docker using gem use the following command:
+```
+sudo zypper in rubygem-sle2docker
+```
+
+However sle2docker can be installed via gem:
 
 ```
 sudo gem install --no-format-exec sle2docker
 ```
 
-Otherwise the `sle2docker` binary will be prefixed with the ruby version you
-have installed (eg: the binary on SLE12 would be called `sle2docker.ruby2.1`).
+The `--no-format-exec` is recommended otherwise the `sle2docker` binary will
+be prefixed with the ruby version installed on the system (eg: the binary on
+SLE12 would be called `sle2docker.ruby2.1`).
 
 # How it works
 
@@ -76,7 +80,7 @@ It's possible to use a local SMT instance by using the `-s` option:
 sle2docker -s <smt server> <path_to_template_dir>
 ```
 
-This will assume your SMT instance does not require authentication and serves
+This will assume the SMT instance does not require authentication and serves
 its contents over HTTPS.
 
 The `-u <username>` and the `-p <password>` options can be used to specify
