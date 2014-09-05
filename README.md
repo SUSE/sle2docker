@@ -4,7 +4,7 @@ sle2docker is a convenience tool which creates SUSE Linux Enterprise images for
 The tool relies on [KIWI](https://github.com/openSUSE/kiwi) and Docker itself
 to build the images.
 
-Packages can be fetched either from Novell Customer Center (NCC) or from a local
+Packages can be fetched either from SUSE Customer Center (SCC) or from a local
 Subscription Management Tool (SMT).
 
 Using DVD sources is currently unsupported.
@@ -71,8 +71,8 @@ A list of the available templates can be obtained by running:
 sle2docker -l
 ```
 
-By default sle2docker assumes packages are going to be fetched from NCC, hence
-it will ask for NCC's credentials.
+By default sle2docker assumes packages are going to be fetched from SUSE
+Customer Center (SCC), hence it will ask for SCC's credentials.
 
 It's possible to use a local SMT instance by using the `-s` option:
 
