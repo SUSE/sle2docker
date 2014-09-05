@@ -71,23 +71,43 @@ A list of the available templates can be obtained by running:
 sle2docker -l
 ```
 
-By default sle2docker assumes packages are going to be fetched from SUSE
-Customer Center (SCC), hence it will ask for SCC's credentials.
+## SUSE Customer Center integration
 
-It's possible to use a local SMT instance by using the `-s` option:
+By default sle2docker downloads all the required packages from SUSE
+Customer Center (SCC). Before the build starts sle2docker ask the user
+his credentials. It is possible to start a build in a non interactive way by
+using the following command:
 
 ```
-sle2docker -s <smt server> <path_to_template_dir>
+sle2docker -u USERNAME -p PASSWORD TEMPLATE_NAME
 ```
 
-This will assume the SMT instance does not require authentication and serves
-its contents over HTTPS.
 
-The `-u <username>` and the `-p <password>` options can be used to specify
-the credentials required to access the remote repositories.
-To retrieve contents over HTTP use the `--disable-https` option.
+## Subscription Management Tool integration
 
-For more details consult the output of `sle2docker --help`.
+It is possible to download all the reuiqred packages from a local 
+Subscription Management Tool (SMT) instance:
+
+```
+sle2docker -s SMT_SERVER_HOSTNAME TEMPLATE_NAME
+```
+
+By default sle2docker assumes the contents of the SMT server are served over
+HTTPS. To force the retrieval of the package over plain HTTP use the
+following command:
+
+```
+sle2docker -s SMT_SERVER_HOSTNAME --disable-https TEMPLATE_NAME
+```
+
+By default sle2docker expects the SMT instance to not require any form of
+authentication. However it is possible to specify the access credentials by
+using the following command:
+
+```
+sle2docker -s SMT_SERVER_HOSTNAME -u USERNAME -p PASSWORD TEMPLATE_NAME
+```
+
 
 # License
 
