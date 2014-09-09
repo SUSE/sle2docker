@@ -1,3 +1,7 @@
+Tue Sep 09 15:42:26 CEST 2014  Flavio Castelli <fcastelli@suse.com>
+
+	* Version 0.1.4: minor fixes to gemspec
+
 Tue Sep 02 08:19:22 CEST 2014  Flavio Castelli <fcastelli@suse.com>
 
 	* Version 0.1.2: made template name case insensitive

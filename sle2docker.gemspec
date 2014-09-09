@@ -10,7 +10,17 @@ Gem::Specification.new do |s|
   s.email       = ['fcastelli@suse.com']
   s.homepage    = "https://github.com/SUSE/sle2docker"
   s.summary     = "Create SLE images for Docker"
-  s.description = "Quickly create SLE images for Docker using kiwi."
+
+  s.description = <<EOD
+sle2docker is a convenience tool which creates SUSE Linux Enterprise images for Docker.
+
+The tool relies on KIWI and Docker itself to build the images.
+
+Packages can be fetched either from Novell Customer Center (NCC) or from a local Subscription Management Tool (SMT).
+
+Using DVD sources is currently unsupported.
+EOD
+  s.licenses    = ['MIT']
 
   s.required_rubygems_version = ">= 1.3.6"
   s.rubyforge_project         = "sle2docker"
