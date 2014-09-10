@@ -26,6 +26,39 @@ module Sle2Docker
       puts Sle2Docker::VERSION
     end
 
+    desc "show TEMPLATE", "Print the rendered TEMPLATE"
+    method_option :username, :aliases => "-u", :type => :string,
+                  :default => nil,
+                  :desc => "Username required to access repositories"
+    method_option :password, :aliases => "-p", :type => :string,
+                  :default => "",
+                  :desc => "Password required to access repositories"
+    method_option :smt_host, :aliases => ["-s", "--smt-host"], :type => :string,
+                  :default => nil,
+                  :desc => "SMT machine hosting the repositories"
+    method_option :disable_https, :aliases => ["--disable-https"],
+                  :type => :boolean,
+                  :default => false,
+                  :desc => "Do not use HTTPS when accessing repositories"
+    def show(template_name)
+      template_dir = Template.template_dir(template_name)
+      builder = Builder.new(options)
+      template_file = builder.find_template_file(template_dir)
+      if template_file.end_with?('.erb')
+        template = builder.render_template(template_file)
+        puts "\n\n"
+        puts template
+      end
+    rescue ConfigNotFoundError => e
+      $stderr.printf(e.message + "\n")
+      exit(1)
+    rescue TemplateNotFoundError => ex
+      $stderr.printf(ex.message + "\n")
+      $stderr.printf("To list the available templates use:\n")
+      $stderr.printf("  sle2docker list\n")
+      exit(1)
+    end
+
     desc "build TEMPLATE", "Use TEMPLATE to build a SLE Docker image"
     method_option :username, :aliases => "-u", :type => :string,
                   :default => nil,

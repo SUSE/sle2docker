@@ -71,6 +71,13 @@ A list of the available templates can be obtained by running:
 sle2docker list
 ```
 
+A templated rendered with user provided data can be printed by using the
+following command:
+
+```
+sle2docker show TEMPLATE
+```
+
 ## SUSE Customer Center integration
 
 By default sle2docker downloads all the required packages from SUSE
