@@ -1,3 +1,9 @@
+Wed Sep 10 22:04:10 CEST 2014  Flavio Castelli <flavio@castelli.name>
+
+	* Version 0.2.0:
+		- Handle cli switches using the Thor
+		- Syntax changed
+
 Tue Sep 09 15:42:26 CEST 2014  Flavio Castelli <fcastelli@suse.com>
 
 	* Version 0.1.4: minor fixes to gemspec
