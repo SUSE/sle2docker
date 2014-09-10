@@ -62,7 +62,7 @@ system.
 To build a template just use the following command:
 
 ```
-sle2docker build <template name>
+sle2docker build TEMPLATE
 ```
 
 A list of the available templates can be obtained by running:
@@ -96,7 +96,7 @@ It is possible to download all the reuiqred packages from a local
 Subscription Management Tool (SMT) instance:
 
 ```
-sle2docker build -s SMT_SERVER_HOSTNAME TEMPLATE_NAME
+sle2docker build -s SMT_SERVER_HOSTNAME TEMPLATE
 ```
 
 By default sle2docker assumes the contents of the SMT server are served over
@@ -104,7 +104,7 @@ HTTPS. To force the retrieval of the package over plain HTTP use the
 following command:
 
 ```
-sle2docker build -s SMT_SERVER_HOSTNAME --disable-https TEMPLATE_NAME
+sle2docker build -s SMT_SERVER_HOSTNAME --disable-https TEMPLATE
 ```
 
 By default sle2docker expects the SMT instance to not require any form of
@@ -112,7 +112,7 @@ authentication. However it is possible to specify the access credentials by
 using the following command:
 
 ```
-sle2docker build -s SMT_SERVER_HOSTNAME -u USERNAME -p PASSWORD TEMPLATE_NAME
+sle2docker build -s SMT_SERVER_HOSTNAME -u USERNAME -p PASSWORD TEMPLATE
 ```
 
 
