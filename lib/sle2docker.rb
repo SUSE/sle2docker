@@ -2,6 +2,7 @@ require 'erb'
 require 'fileutils'
 require 'io/console'
 require 'optparse'
+require 'thor'
 require 'tmpdir'
 
 require_relative 'sle2docker/cli'

@@ -1,83 +1,63 @@
 module Sle2Docker
 
-  class Cli
+  class Cli < Thor
 
-    def initialize
-      @options, @template_dir = parse_options()
+    #def initialize
+    #  @options, @template_dir = parse_options()
+    #end
+
+    #def start
+    #  builder = Builder.new(@options)
+    #  builder.create(@template_dir)
+    #rescue ConfigNotFoundError => e
+    #  $stderr.printf(e.message + "\n")
+    #  exit(1)
+    #end
+
+    desc "list", "List the available templates"
+    def list
+      puts "Available templates:"
+      Template.list.each {|template| puts "  - #{template}"}
     end
 
-    def start
-      builder = Builder.new(@options)
-      builder.create(@template_dir)
+    map "-v" => :version
+    desc "version", "Display version"
+    def version
+      puts Sle2Docker::VERSION
+    end
+
+    desc "build TEMPLATE", "Use TEMPLATE to build a SLE Docker image"
+    method_option :username, :aliases => "-u", :type => :string,
+                  :default => nil,
+                  :desc => "Username required to access repositories"
+    method_option :password, :aliases => "-p", :type => :string,
+                  :default => "",
+                  :desc => "Password required to access repositories"
+    method_option :smt_host, :aliases => ["-s", "--smt-host"], :type => :string,
+                  :default => nil,
+                  :desc => "SMT machine hosting the repositories"
+    method_option :disable_https, :aliases => ["--disable-https"],
+                  :type => :boolean,
+                  :default => false,
+                  :desc => "Do not use HTTPS when accessing repositories"
+    def build(template_name)
+      template_dir = Template.template_dir(template_name)
+      builder = Builder.new(options)
+      container = builder.create(template_dir)
+      puts "Container created, it can be imported by running the following command:"
+      puts "  docker import - <desired image name> < #{container}"
+      puts "\nThen the '#{File.expand_path(File.join(File.dirname(container), '..'))}' directory and all its contents can be removed."
+      puts "Note well: KIWI created some of these files while running as root user, " +
+           "hence root privileges are required to remove them."
     rescue ConfigNotFoundError => e
       $stderr.printf(e.message + "\n")
       exit(1)
-    end
-
-    private
-
-    def parse_options()
-      options = {}
-
-      optparse = OptionParser.new do|opts|
-        opts.banner = "Usage: sle2docker [options] TEMPLATE"
-
-        options[:username] = nil
-        opts.on('-u', '--username USERNAME',
-                'Username required to access repositories' ) do |u|
-          options[:username] = u
-        end
-
-        options[:password] = ""
-        opts.on('-p', '--password PASSWORD',
-                'Password required to access repositories' ) do |p|
-          options[:password] = p
-        end
-
-        options[:smt_host] = nil
-        opts.on('-s', '--smt-host SMT_HOST',
-                'SMT machine hosting the repositories' ) do |smt_host|
-          options[:smt_host] = smt_host
-        end
-
-        options[:disable_https] = false
-        opts.on('--disable-https',
-                'Do not use HTTPS when accessing repositories' ) do
-          options[:disable_https] = true
-        end
-
-        opts.on('-l', '--list-templates', 'List the available templates' ) do
-          puts "Available templates:"
-          Template.list.each {|template| puts "  - #{template}"}
-          exit
-        end
-
-
-        opts.on('-h', '--help', 'Display this screen' ) do
-          puts opts
-          exit
-        end
-
-        opts.on('-v', '--version', 'Display version' ) do
-          puts Sle2Docker::VERSION
-          exit
-        end
-
-      end
-
-      optparse.parse!
-
-      if ARGV.count != 1
-        $stderr.printf("Template not provided\n")
-        exit(1)
-      end
-
-      [options, Template.template_dir(ARGV[0])]
     rescue TemplateNotFoundError => ex
       $stderr.printf(ex.message + "\n")
       $stderr.printf("To list the available templates use:\n")
-      $stderr.printf("  sle2docker -l\n")
+      $stderr.printf("  sle2docker list\n")
       exit(1)
     end
+
   end
 end

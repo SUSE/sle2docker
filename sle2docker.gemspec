@@ -25,6 +25,7 @@ EOD
   s.required_rubygems_version = ">= 1.3.6"
   s.rubyforge_project         = "sle2docker"
 
+  s.add_runtime_dependency "thor"
   s.add_development_dependency "bundler"
   s.add_development_dependency "yard"
   s.files        = `git ls-files`.split("\n")
