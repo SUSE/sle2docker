@@ -1,4 +1,9 @@
-Wed Sep 10 22:04:10 CEST 2014  Flavio Castelli <flavio@castelli.name>
+Thu Sep 11 16:09:41 CEST 2014  Flavio Castelli <fcastelli@suse.com>
+
+	* Version 0.2.1:
+		- Added man (8) page for sle2docker
+
+Wed Sep 10 22:04:10 CEST 2014  Flavio Castelli <fcastelli@suse.com>
 
 	* Version 0.2.0:
 		- Handle cli switches using the Thor
