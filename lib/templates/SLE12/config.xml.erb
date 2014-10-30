@@ -25,11 +25,11 @@
   <users group="root">
     <user password="$1$wYJUgpM5$RXMMeASDc035eX.NbYWFl0" home="/root" name="root"/>
   </users>
-  <repository type="rpm-md" imageinclude="true" alias="SLE12:Pool" >
-    <source path="http<%= "s" if enable_https %>://<%= host %>/SUSE:/Products:/SLE-12/images/repo/SLE-12-Server-POOL-x86_64-Media1/<%= "?credentials=NCCcredentials" if use_ncc %>"/>
+  <repository type="rpm-md" alias="SLE12:Pool" >
+    <source path="http<%= "s" if enable_https %>://<%= host %>/SUSE/Products/SLE-SERVER/12/x86_64/product<%= "?credentials=NCCcredentials" if use_ncc %>"/>
   </repository>
-  <repository type="rpm-md" imageinclude="true" alias="SLE12:Updates" >
-    <source path="http<%= "s" if enable_https %>://<%= host %>/SUSE:/Updates:/SLE-SERVER:/12:/x86_64/standard<%= "?credentials=NCCcredentials" if use_ncc %>"/>
+  <repository type="rpm-md" alias="SLE12:Updates" >
+    <source path="http<%= "s" if enable_https %>://<%= host %>/SUSE/Updates/SLE-SERVER/12/x86_64/update<%= "?credentials=NCCcredentials" if use_ncc %>"/>
   </repository>
   <packages type="image">
     <package name="coreutils"/>
