@@ -1,3 +1,8 @@
+Thu Oct 30 13:48:45 CET 2014  Flavio Castelli <fcastelli@suse.com>
+
+	* Version 0.2.2:
+		- Fixed SLE12 download urls.
+
 Thu Sep 11 16:09:41 CEST 2014  Flavio Castelli <fcastelli@suse.com>
 
 	* Version 0.2.1:
