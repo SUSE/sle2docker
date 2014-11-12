@@ -1,7 +1,7 @@
 require File.expand_path('../../lib/sle2docker',__FILE__)
-require 'bundler/setup' # Use bundled environment for testing
 require 'minitest/autorun'
 require 'stringio'
+require 'fakefs/safe'
 
 class Object
   def capture(stream)

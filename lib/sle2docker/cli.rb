@@ -73,6 +73,9 @@ module Sle2Docker
                   :type => :boolean,
                   :default => false,
                   :desc => "Do not use HTTPS when accessing repositories"
+    method_option :http_proxy, :aliases => ["--http-proxy"],
+                  :default => ENV['http_proxy'],
+                  :desc => "HTTP proxy to use (eg: http://squid.local:3128)"
     def build(template_name)
       template_dir = Template.template_dir(template_name)
       builder = Builder.new(options)

@@ -25,7 +25,15 @@ module Sle2Docker
         end
       end
 
-      docker_cmd = "docker run "
+      docker_cmd = "docker run --rm "
+      # dns entries - otherwise docker uses Google's DNS
+      dns_entries.each do |entry|
+        docker_cmd += "--dns=#{entry} "
+      end
+      # the HTTP proxy specified by the user
+      if @options[:http_proxy]
+        docker_cmd += "-e http_proxy=#{@options[:http_proxy]} "
+      end
       # ensure kiwi cache is persistent
       docker_cmd += "-v /var/cache/kiwi:/var/cache/kiwi "
       # share build dir
@@ -96,6 +104,12 @@ module Sle2Docker
       enable_https = !@options[:disable_https]
 
       ERB.new(File.read(template_file)).result(binding)
+    end
+
+    def dns_entries
+      File.open('/etc/resolv.conf', 'r') do |file|
+        file.readlines("\n").grep(/\Anameserver\s+/).map{|l| l.split(" ", 2)[1].strip}
+      end
     end
   end
 

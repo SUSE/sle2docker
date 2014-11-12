@@ -166,5 +166,25 @@ class BuilderTest < MiniTest::Test
     end
   end
 
+  # Testing parsing of resolv.conf
+
+  def test_parse_resolv_conf
+    actual = []
+    expected = %w(1 2 3)
+
+    FakeFS do
+      FileUtils.mkdir("/etc")
+      File.open("/etc/resolv.conf", 'w') do |file|
+        file.write("nameserver 1\n")
+        file.write("nameserver  2\n")
+        file.write("nameserver\t\t3\n")
+        file.write("# nameserver ignored")
+      end
+      builder = Sle2Docker::Builder.new(@options)
+      actual = builder.dns_entries()
+    end
+
+    assert_equal(expected, actual)
+  end
 end
 
