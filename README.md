@@ -21,7 +21,7 @@ have the rights to interact with it.
 The recommended way to install sle2docker is via zypper:
 
 ```
-sudo zypper in rubygem-sle2docker
+sudo zypper in sle2docker
 ```
 
 However sle2docker can be installed via gem:
@@ -65,7 +65,7 @@ To build a template just use the following command:
 sle2docker build TEMPLATE
 ```
 
-A list of the available templates can be obtained by running:
+A list of the available templates may be obtained by running:
 
 ```
 sle2docker list
@@ -92,11 +92,11 @@ sle2docker build -u USERNAME -p PASSWORD TEMPLATE_NAME
 
 ## Subscription Management Tool integration
 
-It is possible to download all the reuiqred packages from a local 
+It is possible to download all the required packages from a local 
 Subscription Management Tool (SMT) instance:
 
 ```
-sle2docker build -s SMT_SERVER_HOSTNAME TEMPLATE
+sle2docker build -s SMT_SERVER_HOSTNAME/repo TEMPLATE
 ```
 
 By default sle2docker assumes the contents of the SMT server are served over
@@ -104,7 +104,14 @@ HTTPS. To force the retrieval of the package over plain HTTP use the
 following command:
 
 ```
-sle2docker build -s SMT_SERVER_HOSTNAME --disable-https TEMPLATE
+sle2docker build -s SMT_SERVER_HOSTNAME/repo --disable-https TEMPLATE
+```
+
+Example: Say the FQDN of your SMT is mysmt.company.com and you want to build a SLE12 Docker image.
+The corresponding call to sle2docker would look like this:
+
+```
+sle2docker build -s mysmt.company.com/repo --disable-https SLE12
 ```
 
 By default sle2docker expects the SMT instance to not require any form of
