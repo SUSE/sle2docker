@@ -40,6 +40,10 @@ module Sle2Docker
                   :type => :boolean,
                   :default => false,
                   :desc => "Do not use HTTPS when accessing repositories"
+    method_option :include_build_repositories, :aliases => ["--include-build-repos"],
+                  :type => :boolean,
+                  :default => true,
+                  :desc => "Add the repositories used at build time to the Docker image"
     def show(template_name)
       template_dir = Template.template_dir(template_name)
       builder = Builder.new(options)
@@ -76,6 +80,10 @@ module Sle2Docker
     method_option :http_proxy, :aliases => ["--http-proxy"],
                   :default => ENV['http_proxy'],
                   :desc => "HTTP proxy to use (eg: http://squid.local:3128)"
+    method_option :include_build_repositories, :aliases => ["--include-build-repos"],
+                  :type => :boolean,
+                  :default => true,
+                  :desc => "Add the repositories used at build time to the Docker image"
     def build(template_name)
       template_dir = Template.template_dir(template_name)
       builder = Builder.new(options)

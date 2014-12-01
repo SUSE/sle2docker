@@ -25,10 +25,10 @@
   <users group="root">
     <user password="$1$wYJUgpM5$RXMMeASDc035eX.NbYWFl0" home="/root" name="root"/>
   </users>
-  <repository type="rpm-md" alias="SLE12:Pool" >
+  <repository type="rpm-md" alias="SLE12:Pool" <%= 'imageinclude="true"' if include_build_repos %> <%= credentials %>>
     <source path="http<%= "s" if enable_https %>://<%= host %>/SUSE/Products/SLE-SERVER/12/x86_64/product<%= "?credentials=NCCcredentials" if use_ncc %>"/>
   </repository>
-  <repository type="rpm-md" alias="SLE12:Updates" >
+  <repository type="rpm-md" alias="SLE12:Updates" <%= 'imageinclude="true"' if include_build_repos %> <%= credentials %>>
     <source path="http<%= "s" if enable_https %>://<%= host %>/SUSE/Updates/SLE-SERVER/12/x86_64/update<%= "?credentials=NCCcredentials" if use_ncc %>"/>
   </repository>
   <packages type="image">

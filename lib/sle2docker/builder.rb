@@ -103,6 +103,8 @@ module Sle2Docker
 
       enable_https = !@options[:disable_https]
 
+      include_build_repos = @options[:include_build_repositories]
+
       ERB.new(File.read(template_file)).result(binding)
     end
 

@@ -25,10 +25,10 @@
   <users group="root">
     <user password="$1$wYJUgpM5$RXMMeASDc035eX.NbYWFl0" home="/root" name="root"/>
   </users>
-  <repository type="rpm-md" imageinclude="true" alias="SLES11:SP3:Updates" <%= credentials %>>
+  <repository type="rpm-md" alias="SLES11:SP3:Updates" <%= 'imageinclude="true"' if include_build_repos %> <%= credentials %>>
     <source path="http<%= "s" if enable_https %>://<%= host %>/repo/$RCE/SLES11-SP3-Updates/sle-11-x86_64<%= "?credentials=NCCcredentials" if use_ncc %>"/>
   </repository>
-  <repository type="rpm-md" imageinclude="true" alias="SLES11:SP3:Pool" <%= credentials %>>
+  <repository type="rpm-md" alias="SLES11:SP3:Pool" <%= 'imageinclude="true"' if include_build_repos %> <%= credentials %>>
     <source path="http<%= "s" if enable_https %>://<%= host %>/repo/$RCE/SLES11-SP3-Pool/sle-11-x86_64<%= "?credentials=NCCcredentials" if use_ncc %>"/>
   </repository>
   <packages type="image">
