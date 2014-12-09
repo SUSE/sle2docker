@@ -115,6 +115,26 @@ using the following command:
 sle2docker build -s SMT_SERVER_HOSTNAME -u USERNAME -p PASSWORD TEMPLATE
 ```
 
+## Additional repos for the base image
+
+When building images with ```sle2docker```, only the main and updates repository
+is used for installing needed packages. If you want to obtain extra packages
+you need to tweak the templates.
+
+Templates are .erb files located under `lib/templates`. If you installed `sle2docker`
+via `zypper`, the templates are located under
+`/usr/lib64/ruby/gems/2.1.0/gems/sle2docker-0.2.4/lib/templates` (paths may differ).
+You may then add your own `<repository>` section:
+
+```
+  <repository type="rpm-md" alias="YOUR_ALIAS" <%= 'imageinclude="true"' if include_build_repos %>>
+    <source path="PATH_TO_YOUR_REPO"/>
+  </repository>
+```
+
+### Preservation of repository information
+
+If you want to preserve the repository information in the final image, you need to supply the ``--include-build-repos`` parameter to the `build` command.
 
 # License
 
