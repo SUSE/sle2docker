@@ -117,7 +117,7 @@ sle2docker build -s SMT_SERVER_HOSTNAME -u USERNAME -p PASSWORD TEMPLATE
 
 ## Additional repos for the base image
 
-When building images with `sle2docker`, only the main and updates repository
+When building images with `sle2docker`, only the main and updates repositories
 is used for installing needed packages. If you want to obtain extra packages
 you need to tweak the templates.
 
