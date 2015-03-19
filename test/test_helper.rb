@@ -1,4 +1,5 @@
 require File.expand_path('../../lib/sle2docker',__FILE__)
+
 require 'minitest/autorun'
 require 'stringio'
 require 'fakefs/safe'
@@ -41,4 +42,6 @@ class FakeStdin
   end
 
 end
+
+require 'mocha/mini_test'
 

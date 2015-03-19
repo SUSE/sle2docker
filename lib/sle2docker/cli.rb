@@ -6,6 +6,35 @@ module Sle2Docker
     def list
       puts "Available templates:"
       Template.list_kiwi.each {|template| puts "  - #{template}"}
+
+      puts "\nAvailable pre-built images:"
+      prebuilt_images = PrebuiltImage.list
+      if prebuilt_images.empty?
+        puts "No pre-built image found."
+        puts "\nPre-built images can be installed from SLE12 Update repository using zypper:"
+        puts "  zypper install \"sle*-docker-image\""
+      else
+        prebuilt_images.each {|image| puts " - #{image}"}
+      end
+    end
+
+    desc "activate IMAGE_NAME", "Import and activate a pre-built image"
+    long_desc "Import a pre-built image and add the official repositories to it."
+    def activate(image_name)
+      prebuilt_image = Sle2Docker::PrebuiltImage.new(image_name)
+      image_tag = prebuilt_image.docker_tag
+      image_id  = "#{image_tag["repo"]}:#{image_tag["tag"]}"
+      if Docker::Image.exist?(image_id)
+        warn "Image #{image_id} already exists. Exiting"
+        exit(0)
+      else
+        puts "Activating #{image_id}"
+        prebuilt_image.activate
+        puts "Done"
+      end
+    rescue RuntimeError => e
+      $stderr.printf(e.message + "\n")
+      exit(1)
     end
 
     map "-v" => :version

@@ -13,6 +13,8 @@ class BuilderTest < MiniTest::Test
 
     @template_file = File.join(Sle2Docker::Template.kiwi_template_dir("SLE11SP3"),
                               "config.xml.erb")
+
+    FakeFS::FileSystem.clear
   end
 
 

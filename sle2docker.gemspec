@@ -25,10 +25,12 @@ EOD
   s.required_rubygems_version = ">= 1.3.6"
   s.rubyforge_project         = "sle2docker"
 
+  s.add_runtime_dependency "docker-api"
   s.add_runtime_dependency "thor"
   s.add_development_dependency "bundler"
   s.add_development_dependency "fakefs"
   s.add_development_dependency 'rake'
+  s.add_development_dependency "mocha"
   s.add_development_dependency "yard"
   s.files        = `git ls-files`.split("\n")
   s.executables  = `git ls-files`.split("\n").map{|f| f =~ /^bin\/(.*)/ ? $1 : nil}.compact

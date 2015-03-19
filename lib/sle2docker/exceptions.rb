@@ -6,4 +6,10 @@ module Sle2Docker
   class ConfigNotFoundError < RuntimeError
   end
 
+  class PrebuiltImageNotFoundError < RuntimeError
+  end
+
+  class DockerTagError < RuntimeError
+  end
+
 end
