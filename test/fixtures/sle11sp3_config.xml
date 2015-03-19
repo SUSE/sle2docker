@@ -25,10 +25,10 @@
   <users group="root">
     <user password="$1$wYJUgpM5$RXMMeASDc035eX.NbYWFl0" home="/root" name="root"/>
   </users>
-  <repository type="rpm-md" imageinclude="true" alias="SLES11:SP3:Updates" username='test_user' password='fake password'>
+  <repository type="rpm-md" alias="SLES11:SP3:Updates" imageinclude="true" username='test_user' password='fake password'>
     <source path="https://nu.novell.com/repo/$RCE/SLES11-SP3-Updates/sle-11-x86_64?credentials=NCCcredentials"/>
   </repository>
-  <repository type="rpm-md" imageinclude="true" alias="SLES11:SP3:Pool" username='test_user' password='fake password'>
+  <repository type="rpm-md" alias="SLES11:SP3:Pool" imageinclude="true" username='test_user' password='fake password'>
     <source path="https://nu.novell.com/repo/$RCE/SLES11-SP3-Pool/sle-11-x86_64?credentials=NCCcredentials"/>
   </repository>
   <packages type="image">

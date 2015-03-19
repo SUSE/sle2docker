@@ -7,7 +7,8 @@ class BuilderTest < MiniTest::Test
       :username => nil,
       :password => '',
       :smt_host => nil,
-      :disable_https => false
+      :disable_https => false,
+      :include_build_repositories => true
     }
 
     @template_file = File.join(Sle2Docker::Template.template_dir("SLE11SP3"),
