@@ -2,18 +2,6 @@ module Sle2Docker
 
   class Cli < Thor
 
-    #def initialize
-    #  @options, @template_dir = parse_options()
-    #end
-
-    #def start
-    #  builder = Builder.new(@options)
-    #  builder.create(@template_dir)
-    #rescue ConfigNotFoundError => e
-    #  $stderr.printf(e.message + "\n")
-    #  exit(1)
-    #end
-
     desc "list", "List the available templates"
     def list
       puts "Available templates:"
