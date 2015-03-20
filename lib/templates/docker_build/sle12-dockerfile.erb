@@ -1,0 +1,8 @@
+FROM scratch
+MAINTAINER "Flavio Castelli <fcastelli@suse.com>"
+
+ADD <%= prebuilt_image %> /
+
+ADD zypp/credentials.d /etc/zypp/credentials.d
+ADD zypp/repos.d /etc/zypp/repos.d
+ADD zypp/services.d /etc/zypp/services.d
