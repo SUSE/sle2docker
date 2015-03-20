@@ -11,7 +11,7 @@ class BuilderTest < MiniTest::Test
       :include_build_repositories => true
     }
 
-    @template_file = File.join(Sle2Docker::Template.template_dir("SLE11SP3"),
+    @template_file = File.join(Sle2Docker::Template.kiwi_template_dir("SLE11SP3"),
                               "config.xml.erb")
   end
 
@@ -151,8 +151,8 @@ class BuilderTest < MiniTest::Test
   # Testing find_template_file
 
   def test_find_template_file
-    template = Sle2Docker::Template.list.first
-    template_dir = Sle2Docker::Template.template_dir(template)
+    template = Sle2Docker::Template.list_kiwi.first
+    template_dir = Sle2Docker::Template.kiwi_template_dir(template)
     builder = Sle2Docker::Builder.new(@options)
 
     actual = builder.find_template_file(template_dir)

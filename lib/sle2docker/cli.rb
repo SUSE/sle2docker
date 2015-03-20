@@ -5,7 +5,7 @@ module Sle2Docker
     desc "list", "List the available templates"
     def list
       puts "Available templates:"
-      Template.list.each {|template| puts "  - #{template}"}
+      Template.list_kiwi.each {|template| puts "  - #{template}"}
     end
 
     map "-v" => :version
@@ -33,7 +33,7 @@ module Sle2Docker
                   :default => true,
                   :desc => "Add the repositories used at build time to the Docker image"
     def show(template_name)
-      template_dir = Template.template_dir(template_name)
+      template_dir = Template.kiwi_template_dir(template_name)
       builder = Builder.new(options)
       template_file = builder.find_template_file(template_dir)
       if template_file.end_with?('.erb')
@@ -73,7 +73,7 @@ module Sle2Docker
                   :default => true,
                   :desc => "Add the repositories used at build time to the Docker image"
     def build(template_name)
-      template_dir = Template.template_dir(template_name)
+      template_dir = Template.kiwi_template_dir(template_name)
       builder = Builder.new(options)
       container = builder.create(template_dir)
       puts "Container created, it can be imported by running the following command:"
