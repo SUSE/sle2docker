@@ -44,7 +44,7 @@ class PrebuiltImageTest < MiniTest::Test
       it "creates a Dockerfile" do
         begin
           image = "sles12-docker-image-1.0.0"
-          prebuilt_image = Sle2Docker::PrebuiltImage.new(image)
+          prebuilt_image = Sle2Docker::PrebuiltImage.new(image, {})
           expected = <<EOF
 FROM scratch
 MAINTAINER "Flavio Castelli <fcastelli@suse.com>"
@@ -112,7 +112,7 @@ EOS
           end
         end
 
-        prebuilt_image = Sle2Docker::PrebuiltImage.new('foo')
+        prebuilt_image = Sle2Docker::PrebuiltImage.new('foo', {})
         prebuilt_image.copy_zypper_resources(destination)
 
         assert File.exist?(destination + "zypp/repos.d")
@@ -135,7 +135,7 @@ EOS
                   .with({'repo' => 'suse/sles12', 'tag' => '1.0.0'})
                   .once
 
-      prebuilt_image = Sle2Docker::PrebuiltImage.new('sles12-docker.x86_64-1.0.0-Build7.2')
+      prebuilt_image = Sle2Docker::PrebuiltImage.new('sles12-docker.x86_64-1.0.0-Build7.2', {})
       prebuilt_image.expects(:prepare_docker_build_root).once.returns(tmp_dir)
       Docker::Image.expects(:build_from_dir).with(tmp_dir).once.returns(mocked_image)
       FileUtils.expects(:rm_rf).with(tmp_dir).once

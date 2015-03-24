@@ -20,18 +20,32 @@ module Sle2Docker
 
     desc "activate IMAGE_NAME", "Import and activate a pre-built image"
     long_desc "Import a pre-built image and add the official repositories to it."
+    method_option :username, :aliases => "-u", :type => :string,
+                  :default => nil,
+                  :desc => "Username required to access repositories"
+    method_option :password, :aliases => "-p", :type => :string,
+                  :default => "",
+                  :desc => "Password required to access repositories"
+    method_option :smt_host, :aliases => ["-s", "--smt-host"], :type => :string,
+                  :default => nil,
+                  :desc => "SMT machine hosting the repositories"
+    method_option :disable_https, :aliases => ["--disable-https"],
+                  :type => :boolean,
+                  :default => false,
+                  :desc => "Do not use HTTPS when accessing repositories"
     def activate(image_name)
-      prebuilt_image = Sle2Docker::PrebuiltImage.new(image_name)
+      prebuilt_image = Sle2Docker::PrebuiltImage.new(image_name, options)
       image_tag = prebuilt_image.docker_tag
       image_id  = "#{image_tag["repo"]}:#{image_tag["tag"]}"
       if Docker::Image.exist?(image_id)
         warn "Image #{image_id} already exists. Exiting"
         exit(0)
-      else
-        puts "Activating #{image_id}"
-        prebuilt_image.activate
-        puts "Done"
       end
+
+      puts "Activating #{image_id}"
+      prebuilt_image.activate
+
+      puts "Done"
     rescue RuntimeError => e
       $stderr.printf(e.message + "\n")
       exit(1)

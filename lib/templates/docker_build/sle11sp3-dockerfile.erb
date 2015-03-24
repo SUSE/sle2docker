@@ -1,0 +1,15 @@
+FROM scratch
+MAINTAINER "Flavio Castelli <fcastelli@suse.com>"
+
+ADD <%= prebuilt_image %> /
+
+<% repositories.each do |url, name| %>
+RUN zypper ar -f <%= url %> "<%= name %>"
+<% end %>
+
+RUN mkdir /etc/zypp/credentials.d
+RUn echo "username=<%= credentials[:username] %>" > /etc/zypp/credentials.d/<%= credentials[:filename] %>
+RUn echo "password=<%= credentials[:password] %>" > /etc/zypp/credentials.d/<%= credentials[:filename] %>
+
+RUN zypper --gpg-auto-import-keys refresh
+

@@ -5,8 +5,8 @@ module Sle2Docker
     IMAGES_DIR = "/usr/share/suse-docker-images"
 
     class SUPPORTED_BASE_SYSTEMS
-      SLE11 = "sle11"
-      SLE12 = "sle12"
+      SLE11SP3 = "sle11sp3"
+      SLE12    = "sle12"
     end
 
     def self.list
@@ -19,12 +19,14 @@ module Sle2Docker
       end
     end
 
-    def initialize(image_name)
+    def initialize(image_name, options)
       @image_name = image_name
+      @options    = options
+
       @base_system = if @image_name =~ /\Asle.12/
         SUPPORTED_BASE_SYSTEMS::SLE12
-      elsif @image_name =~ /\Asle.11/
-        SUPPORTED_BASE_SYSTEMS::SLE11
+      elsif @image_name =~ /\Asle.11sp3/
+        SUPPORTED_BASE_SYSTEMS::SLE11SP3
       end
     end
 
@@ -54,11 +56,21 @@ module Sle2Docker
     end
 
     def create_dockerfile(tmp_dir)
+      repositories  = {}
+      credentials   = {}
       template_name = case @base_system
       when SUPPORTED_BASE_SYSTEMS::SLE12
         "sle12-dockerfile.erb"
-      when SUPPORTED_BASE_SYSTEMS::SLE11
-        "sle11-dockerfile.erb"
+      when SUPPORTED_BASE_SYSTEMS::SLE11SP3
+        repositories["https://nu.novell.com/repo/\\$RCE/SLES11-SP3-Updates/sle-11-x86_64?credentials=NCCcredentials"] = "SLES11-SP3-Updates"
+        repositories["https://nu.novell.com/repo/\\$RCE/SLES11-SP3-Pool/sle-11-x86_64?credentials=NCCcredentials"] = "SLES11-SP3-Pool"
+
+        cred_helper = CredentialsHelper.new(@options, true)
+        credentials[:username] = cred_helper.username
+        credentials[:password] = cred_helper.password
+        credentials[:filename] = "NCCcredentials"
+
+        "sle11sp3-dockerfile.erb"
       else
         raise TemplateNotFoundError.new("Cannot find right template for #{@image_name}")
       end
