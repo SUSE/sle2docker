@@ -82,21 +82,12 @@ module Sle2Docker
         "nu.novell.com"
       end
 
-      username = @options[:username]
-      if !username && (!@options[:password].empty? || !@options[:smt_host])
-        puts "Enter #{@options[:smt_host] ? '' : 'NCC '}username:"
-        username = $stdin.gets.chomp
-      end
-
-      password = @options[:password]
-      if (username || !@options[:smt_host]) && password.empty?
-        puts "Enter #{@options[:smt_host] ? '' : 'NCC '}password:"
-        password = $stdin.noecho(&:gets).chomp
-      end
-
+      cred_helper = CredentialsHelper.new(
+        @options,
+        (!@options[:password].empty? || !@options[:smt_host]))
       credentials = ""
-      if username || !password.empty?
-        credentials = "username='#{username}' password='#{password}'"
+      if cred_helper.username || !cred_helper.password.empty?
+        credentials = "username='#{cred_helper.username}' password='#{cred_helper.password}'"
       end
 
       use_ncc = !@options[:smt_host]

@@ -7,6 +7,7 @@ require 'thor'
 require 'tmpdir'
 
 require_relative 'sle2docker/cli'
+require_relative 'sle2docker/credentials_helper'
 require_relative 'sle2docker/builder'
 require_relative 'sle2docker/exceptions'
 require_relative 'sle2docker/prebuilt_image'
