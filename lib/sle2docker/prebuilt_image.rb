@@ -35,7 +35,10 @@ module Sle2Docker
         raise PrebuiltImageNotFoundError("Cannot find pre-built image #{@image_name}")
       end
 
+      verify_image
+
       tmp_dir = prepare_docker_build_root
+      puts "Activating image"
       image = Docker::Image.build_from_dir(tmp_dir)
       image.tag(docker_tag())
     ensure
@@ -150,6 +153,20 @@ module Sle2Docker
         "repo" => "suse/#{match["name"]}",
         "tag" => match["version"]
       }
+    end
+
+    def verify_image
+      file = File.join(IMAGES_DIR, "#{@image_name}.tar.xz")
+      package_name = `rpm -qf #{file}`
+      if $?.exitstatus != 0
+        raise PrebuiltImageVerificationError.new("Cannot find rpm package providing #{file}: #{package_name}")
+      end
+
+      puts "Verifying integrity of the pre-built image"
+      verification = `rpm --verify #{package_name}`
+      if $?.exitstatus != 0
+        raise PrebuiltImageVerificationError.new("Verification of #{package_name} failed: #{verification}")
+      end
     end
 
   end

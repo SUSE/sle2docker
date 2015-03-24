@@ -12,4 +12,7 @@ module Sle2Docker
   class DockerTagError < RuntimeError
   end
 
+  class PrebuiltImageVerificationError < RuntimeError
+  end
+
 end

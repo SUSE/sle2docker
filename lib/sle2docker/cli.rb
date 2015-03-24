@@ -42,10 +42,8 @@ module Sle2Docker
         exit(0)
       end
 
-      puts "Activating #{image_id}"
       prebuilt_image.activate
-
-      puts "Done"
+      puts "#{image_id} activated"
     rescue RuntimeError => e
       $stderr.printf(e.message + "\n")
       exit(1)

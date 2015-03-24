@@ -137,6 +137,7 @@ EOS
 
       prebuilt_image = Sle2Docker::PrebuiltImage.new('sles12-docker.x86_64-1.0.0-Build7.2', {})
       prebuilt_image.expects(:prepare_docker_build_root).once.returns(tmp_dir)
+      prebuilt_image.expects(:verify_image).once
       Docker::Image.expects(:build_from_dir).with(tmp_dir).once.returns(mocked_image)
       FileUtils.expects(:rm_rf).with(tmp_dir).once
 
