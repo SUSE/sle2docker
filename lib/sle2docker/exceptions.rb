@@ -1,5 +1,4 @@
 module Sle2Docker
-
   class TemplateNotFoundError < RuntimeError
   end
 
@@ -14,5 +13,4 @@ module Sle2Docker
 
   class PrebuiltImageVerificationError < RuntimeError
   end
-
 end

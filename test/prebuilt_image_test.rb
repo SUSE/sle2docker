@@ -1,30 +1,28 @@
 require_relative 'test_helper'
 
+# rubocop:disable Metrics/ClassLength, Style/Documentation, Metrics/LineLength, Style/MethodCallParentheses:
 class PrebuiltImageTest < MiniTest::Test
-
-  describe "PrebuiltImage" do
-
+  describe 'PrebuiltImage' do
     before do
-      @options = { password: "" }
+      @options = { password: '' }
     end
 
     after do
       FakeFS::FileSystem.clear
     end
 
-    describe "listing available images" do
-
-      it "works when no pre-built image is available" do
+    describe 'listing available images' do
+      it 'works when no pre-built image is available' do
         actual = Sle2Docker::PrebuiltImage.list
         expected = []
         assert_equal expected, actual
       end
 
-      it "lists the names of the available images" do
+      it 'lists the names of the available images' do
         FakeFS do
           expected = [
-            "sles11sp3-docker.x86_64-1.0.0-Build1.3",
-            "sles12-docker.x86_64-1.0.0-Build7.2"
+            'sles11sp3-docker.x86_64-1.0.0-Build1.3',
+            'sles12-docker.x86_64-1.0.0-Build7.2'
           ]
 
           FileUtils.mkdir_p(Sle2Docker::PrebuiltImage::IMAGES_DIR)
@@ -43,11 +41,10 @@ class PrebuiltImageTest < MiniTest::Test
       end
     end
 
-    describe "activation of SLE12 pre-built image" do
-
-      it "creates a Dockerfile re-using host's credentials" do
+    describe 'activation of SLE12 pre-built image' do
+      it 'creates a Dockerfile re-using the host credentials' do
         begin
-          image = "sles12-docker-image-1.0.0"
+          image = 'sles12-docker-image-1.0.0'
           prebuilt_image = Sle2Docker::PrebuiltImage.new(image, @options)
           expected = <<EOF
 FROM scratch
@@ -62,23 +59,21 @@ ADD zypp/services.d /etc/zypp/services.d
 RUN zypper --gpg-auto-import-keys refresh
 EOF
 
-          tmp_dir = Dir.mktmpdir("sle2docker-test")
+          tmp_dir = Dir.mktmpdir('sle2docker-test')
           prebuilt_image.create_dockerfile(tmp_dir)
-          dockerfile = File.join(tmp_dir, "Dockerfile")
+          dockerfile = File.join(tmp_dir, 'Dockerfile')
 
           assert File.exist?(dockerfile)
           assert_equal(expected, File.read(dockerfile))
         ensure
-          if File.exist?(tmp_dir)
-            FileUtils.rm_rf(tmp_dir)
-          end
+          FileUtils.rm_rf(tmp_dir) if File.exist?(tmp_dir)
         end
       end
 
-      it "creates a Dockerfile using SMT repositories" do
+      it 'creates a Dockerfile using SMT repositories' do
         begin
-          image = "sles12-docker-image-1.0.0"
-          smt_host = "my-smt.local"
+          image = 'sles12-docker-image-1.0.0'
+          smt_host = 'my-smt.local'
           @options[:smt_host] = smt_host
           prebuilt_image = Sle2Docker::PrebuiltImage.new(
             image, @options)
@@ -95,23 +90,21 @@ RUN zypper ar -f https://my-smt.local/SUSE/Updates/SLE-SERVER/12/x86_64/update S
 RUN zypper --gpg-auto-import-keys refresh
 EOF
 
-          tmp_dir = Dir.mktmpdir("sle2docker-test")
+          tmp_dir = Dir.mktmpdir('sle2docker-test')
           prebuilt_image.create_dockerfile(tmp_dir)
-          dockerfile = File.join(tmp_dir, "Dockerfile")
+          dockerfile = File.join(tmp_dir, 'Dockerfile')
 
           assert File.exist?(dockerfile)
           assert_equal(expected, File.read(dockerfile))
         ensure
-          if File.exist?(tmp_dir)
-            FileUtils.rm_rf(tmp_dir)
-          end
+          FileUtils.rm_rf(tmp_dir) if File.exist?(tmp_dir)
         end
       end
 
-      it "creates a Dockerfile using SMT repositories not using https" do
+      it 'creates a Dockerfile using SMT repositories not using https' do
         begin
-          image = "sles12-docker-image-1.0.0"
-          smt_host = "my-smt.local"
+          image = 'sles12-docker-image-1.0.0'
+          smt_host = 'my-smt.local'
           @options[:smt_host] = smt_host
           @options[:disable_https] = true
           prebuilt_image = Sle2Docker::PrebuiltImage.new(
@@ -129,40 +122,38 @@ RUN zypper ar -f http://my-smt.local/SUSE/Updates/SLE-SERVER/12/x86_64/update SL
 RUN zypper --gpg-auto-import-keys refresh
 EOF
 
-          tmp_dir = Dir.mktmpdir("sle2docker-test")
+          tmp_dir = Dir.mktmpdir('sle2docker-test')
           prebuilt_image.create_dockerfile(tmp_dir)
-          dockerfile = File.join(tmp_dir, "Dockerfile")
+          dockerfile = File.join(tmp_dir, 'Dockerfile')
 
           assert File.exist?(dockerfile)
           assert_equal(expected, File.read(dockerfile))
         ensure
-          if File.exist?(tmp_dir)
-            FileUtils.rm_rf(tmp_dir)
-          end
+          FileUtils.rm_rf(tmp_dir) if File.exist?(tmp_dir)
         end
       end
 
-      it "copies the right repositories into the build directory" do
+      it 'copies the right repositories into the build directory' do
         FakeFS do
-          zypp_path = "/etc/zypp"
+          zypp_path = '/etc/zypp'
 
           # setup repos.d
           FileUtils.mkdir_p("#{zypp_path}/repos.d")
-          destination = "/tmp/"
+          destination = '/tmp/'
           FileUtils.mkdir_p(destination)
 
-          repos_to_copy = 4.times.map{|index| "to_copy_#{index + 1}"}
-          (repos_to_copy + ["repo_to_ignore"]).each do |repo|
-            FileUtils.touch(File.join(zypp_path, "repos.d", repo) + ".repo")
+          repos_to_copy = 4.times.map { |index| "to_copy_#{index + 1}" }
+          (repos_to_copy + ['repo_to_ignore']).each do |repo|
+            FileUtils.touch(File.join(zypp_path, 'repos.d', repo) + '.repo')
           end
 
           # setup credentials.d
-          FileUtils.mkdir_p(zypp_path + "/credentials.d")
-          FileUtils.touch(zypp_path + "/credentials.d/test_credential")
+          FileUtils.mkdir_p(zypp_path + '/credentials.d')
+          FileUtils.touch(zypp_path + '/credentials.d/test_credential')
 
           # setup credentials.d
-          FileUtils.mkdir_p(zypp_path + "/services.d")
-          File.open(zypp_path + "/services.d/SLE12.service", "w") do |file|
+          FileUtils.mkdir_p(zypp_path + '/services.d')
+          File.open(zypp_path + '/services.d/SLE12.service', 'w') do |file|
             file.write(<<EOS
 [SUSE_Linux_Enterprise_Server_12_x86_64]
 name=SUSE_Linux_Enterprise_Server_12_x86_64
@@ -185,10 +176,10 @@ EOS
           prebuilt_image = Sle2Docker::PrebuiltImage.new('foo', @options)
           prebuilt_image.copy_zypper_resources(destination)
 
-          assert File.exist?(destination + "zypp/repos.d")
-          actual = Dir["#{destination}/zypp/repos.d/*.repo"].map{|file| File.basename(file)}
+          assert File.exist?(destination + 'zypp/repos.d')
+          actual = Dir["#{destination}/zypp/repos.d/*.repo"].map { |file| File.basename(file) }
           assert_equal(
-            repos_to_copy.map {|repo_name| "#{repo_name}.repo"}.sort,
+            repos_to_copy.map { |repo_name| "#{repo_name}.repo" }.sort,
             actual.sort
           )
 
@@ -197,13 +188,13 @@ EOS
         end
       end
 
-      it "triggers docker build" do
-        File.stubs(:exists?).returns(true)
-        tmp_dir = "/foo"
+      it 'triggers docker build' do
+        File.stubs(:exist?).returns(true)
+        tmp_dir = '/foo'
         mocked_image = mock()
         mocked_image.expects(:tag)
-                    .with({'repo' => 'suse/sles12', 'tag' => '1.0.0'})
-                    .once
+          .with('repo' => 'suse/sles12', 'tag' => '1.0.0')
+          .once
 
         prebuilt_image = Sle2Docker::PrebuiltImage.new(
           'sles12-docker.x86_64-1.0.0-Build7.2',
@@ -216,18 +207,16 @@ EOS
 
         prebuilt_image.activate
       end
-
     end
 
-    describe "activation of SLE11SP3 pre-built image" do
-
-      it "creates a Dockerfile using NCC repositories" do
+    describe 'activation of SLE11SP3 pre-built image' do
+      it 'creates a Dockerfile using NCC repositories' do
         begin
-          username = "test_username"
-          password = "test_password"
+          username = 'test_username'
+          password = 'test_password'
           $stdin = FakeStdin.new([username, password])
 
-          image = "sles11sp3-docker-image-1.0.0"
+          image = 'sles11sp3-docker-image-1.0.0'
           prebuilt_image = Sle2Docker::PrebuiltImage.new(image, @options)
           expected = <<EOF
 FROM scratch
@@ -247,23 +236,21 @@ RUN zypper --gpg-auto-import-keys refresh
 
 EOF
 
-          tmp_dir = Dir.mktmpdir("sle2docker-test")
+          tmp_dir = Dir.mktmpdir('sle2docker-test')
           prebuilt_image.create_dockerfile(tmp_dir)
-          dockerfile = File.join(tmp_dir, "Dockerfile")
+          dockerfile = File.join(tmp_dir, 'Dockerfile')
 
           assert File.exist?(dockerfile)
           assert_equal(expected, File.read(dockerfile))
         ensure
-          if File.exist?(tmp_dir)
-            FileUtils.rm_rf(tmp_dir)
-          end
+          FileUtils.rm_rf(tmp_dir) if File.exist?(tmp_dir)
         end
       end
 
-      it "creates a Dockerfile using SMT repositories" do
+      it 'creates a Dockerfile using SMT repositories' do
         begin
-          image = "sles11sp3-docker-image-1.0.0"
-          smt_host = "my-smt.local"
+          image = 'sles11sp3-docker-image-1.0.0'
+          smt_host = 'my-smt.local'
           @options[:smt_host] = smt_host
           prebuilt_image = Sle2Docker::PrebuiltImage.new(
             image, @options)
@@ -282,21 +269,20 @@ RUN zypper --gpg-auto-import-keys refresh
 
 EOF
 
-          tmp_dir = Dir.mktmpdir("sle2docker-test")
+          tmp_dir = Dir.mktmpdir('sle2docker-test')
           prebuilt_image.create_dockerfile(tmp_dir)
-          dockerfile = File.join(tmp_dir, "Dockerfile")
+          dockerfile = File.join(tmp_dir, 'Dockerfile')
 
           assert File.exist?(dockerfile)
           assert_equal(expected, File.read(dockerfile))
         ensure
-          if File.exist?(tmp_dir)
-            FileUtils.rm_rf(tmp_dir)
-          end
+          FileUtils.rm_rf(tmp_dir) if File.exist?(tmp_dir)
         end
       end
 
-      it "triggers docker build" do
+      it 'triggers docker build' do
         FakeFS do
+          @options[:smt_host] = 'my-smt.local'
           image_name = 'sles11sp3-docker.x86_64-1.0.0-Build7.2'
 
           FileUtils.mkdir_p(Sle2Docker::PrebuiltImage::IMAGES_DIR)
@@ -304,12 +290,10 @@ EOF
 
           mocked_image = mock()
           mocked_image.expects(:tag)
-                      .with({'repo' => 'suse/sles11sp3', 'tag' => '1.0.0'})
-                      .once
+            .with('repo' => 'suse/sles11sp3', 'tag' => '1.0.0')
+            .once
 
-          prebuilt_image = Sle2Docker::PrebuiltImage.new(
-            image_name,
-            {smt_host: 'my-smt.local'})
+          prebuilt_image = Sle2Docker::PrebuiltImage.new(image_name, @options)
           prebuilt_image.expects(:create_dockerfile).once
           prebuilt_image.expects(:copy_prebuilt_image).once
           prebuilt_image.expects(:copy_zypper_resources).never
@@ -319,10 +303,6 @@ EOF
           prebuilt_image.activate
         end
       end
-
     end
-
   end
-
 end
-

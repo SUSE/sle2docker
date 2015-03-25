@@ -14,7 +14,11 @@ begin
   require 'yard'
   YARD::Rake::YardocTask.new
 rescue LoadError
-  puts "Yard not available. To generate documentation install it with: gem install yard"
+  warn 'Yard not available. To generate documentation install it with: ' \
+       'gem install yard'
 end
+
+require 'rubocop/rake_task'
+RuboCop::RakeTask.new
 
 task default: :test

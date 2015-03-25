@@ -2,4 +2,3 @@
 require_relative '../lib/sle2docker'
 
 Sle2Docker::Cli.start(ARGV)
-

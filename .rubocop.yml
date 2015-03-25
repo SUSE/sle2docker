@@ -1,0 +1,5 @@
+AllCops:
+  Exclude:
+    - Vagrantfile
+    - sle2docker.gemspec
+    - lib/templates/**/*

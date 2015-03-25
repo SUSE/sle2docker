@@ -1,7 +1,9 @@
 module Sle2Docker
-
+  # Helper class handling user credentials
+  #
+  # This class takes care of user interaction to make sure username and
+  # password are specified
   class CredentialsHelper
-
     def initialize(options, mandatory)
       # make a duplicate, this is usually a frozen hash created by Thor
       @options   = options.dup
@@ -23,7 +25,5 @@ module Sle2Docker
       end
       @options[:password]
     end
-
   end
-
 end
