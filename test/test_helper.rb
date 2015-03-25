@@ -1,3 +1,6 @@
+require "codeclimate-test-reporter"
+CodeClimate::TestReporter.start
+
 require File.expand_path('../../lib/sle2docker', __FILE__)
 
 require 'minitest/autorun'
@@ -44,3 +47,4 @@ class FakeStdin
 end
 
 require 'mocha/mini_test'
+
