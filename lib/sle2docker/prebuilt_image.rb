@@ -52,7 +52,7 @@ module Sle2Docker
 
       create_dockerfile(tmp_dir)
       copy_prebuilt_image(tmp_dir)
-      if @base_system == SUPPORTED_BASE_SYSTEMS::SLE12 && @options[:smt_host].empty?
+      if @base_system == SUPPORTED_BASE_SYSTEMS::SLE12 && @options[:smt_host].nil?
         copy_zypper_resources(tmp_dir)
       end
       tmp_dir
