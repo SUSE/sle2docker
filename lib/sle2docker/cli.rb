@@ -140,6 +140,7 @@ module Sle2Docker
       template_dir = Template.kiwi_template_dir(template_name)
       builder = Builder.new(options)
       container = builder.create(template_dir)
+      kiwi_tmp_dir = File.expand_path(File.join(File.dirname(container), '..'))
       puts 'Container created, it can be imported by running the following ' \
         'command:'
       puts "  docker import - <desired image name> < #{container}\n"
