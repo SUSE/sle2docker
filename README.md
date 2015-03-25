@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/SUSE/sle2docker.svg)](https://travis-ci.org/SUSE/sle2docker)
+
+
 sle2docker is a convenience tool which creates SUSE Linux Enterprise images for
 [Docker](http://docker.com).
 
