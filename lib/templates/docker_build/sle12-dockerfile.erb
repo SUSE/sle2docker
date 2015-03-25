@@ -3,8 +3,14 @@ MAINTAINER "Flavio Castelli <fcastelli@suse.com>"
 
 ADD <%= prebuilt_image %> /
 
+<% if repositories.empty? %>
 ADD zypp/credentials.d /etc/zypp/credentials.d
 ADD zypp/repos.d /etc/zypp/repos.d
 ADD zypp/services.d /etc/zypp/services.d
+<% else %>
+<% repositories.each do |url, name| %>
+RUN zypper ar -f <%= url %> "<%= name %>"
+<% end %>
+<% end %>
 
 RUN zypper --gpg-auto-import-keys refresh

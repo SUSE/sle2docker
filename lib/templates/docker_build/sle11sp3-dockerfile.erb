@@ -7,9 +7,12 @@ ADD <%= prebuilt_image %> /
 RUN zypper ar -f <%= url %> "<%= name %>"
 <% end %>
 
+<% if !credentials.empty? %>
 RUN mkdir /etc/zypp/credentials.d
-RUn echo "username=<%= credentials[:username] %>" > /etc/zypp/credentials.d/<%= credentials[:filename] %>
-RUn echo "password=<%= credentials[:password] %>" > /etc/zypp/credentials.d/<%= credentials[:filename] %>
+RUN echo "username=<%= credentials[:username] %>" > /etc/zypp/credentials.d/<%= credentials[:filename] %>
+RUN echo "password=<%= credentials[:password] %>" > /etc/zypp/credentials.d/<%= credentials[:filename] %>
+RUN chmod 600 /etc/zypp/credentials.d/NCCcredentials
+<% end %>
 
 RUN zypper --gpg-auto-import-keys refresh
 

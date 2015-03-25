@@ -32,7 +32,7 @@ module Sle2Docker
 
     def activate
       if !File.exists?(File.join(IMAGES_DIR, "#{@image_name}.tar.xz"))
-        raise PrebuiltImageNotFoundError("Cannot find pre-built image #{@image_name}")
+        raise PrebuiltImageNotFoundError.new("Cannot find pre-built image #{@image_name}")
       end
 
       verify_image
@@ -52,7 +52,7 @@ module Sle2Docker
 
       create_dockerfile(tmp_dir)
       copy_prebuilt_image(tmp_dir)
-      if @base_system == SUPPORTED_BASE_SYSTEMS::SLE12
+      if @base_system == SUPPORTED_BASE_SYSTEMS::SLE12 && @options[:smt_host].empty?
         copy_zypper_resources(tmp_dir)
       end
       tmp_dir
@@ -61,19 +61,29 @@ module Sle2Docker
     def create_dockerfile(tmp_dir)
       repositories  = {}
       credentials   = {}
-      template_name = case @base_system
+
+      case @base_system
       when SUPPORTED_BASE_SYSTEMS::SLE12
-        "sle12-dockerfile.erb"
+        if @options[:smt_host]
+          repositories["http://#{@options[:smt_host]}/SUSE/Products/SLE-SERVER/12/x86_64/product"] = "SLE12-Pool"
+          repositories["http://#{@options[:smt_host]}/SUSE/Updates/SLE-SERVER/12/x86_64/update"] = "SLE12-Updates"
+        end
+        template_name = "sle12-dockerfile.erb"
       when SUPPORTED_BASE_SYSTEMS::SLE11SP3
-        repositories["https://nu.novell.com/repo/\\$RCE/SLES11-SP3-Updates/sle-11-x86_64?credentials=NCCcredentials"] = "SLES11-SP3-Updates"
-        repositories["https://nu.novell.com/repo/\\$RCE/SLES11-SP3-Pool/sle-11-x86_64?credentials=NCCcredentials"] = "SLES11-SP3-Pool"
+        if @options[:smt_host]
+          repositories["https://#{@options[:smt_host]}/repo/\\$RCE/SLES11-SP3-Updates/sle-11-x86_64?credentials=NCCcredentials"] = "SLES11-SP3-Updates"
+          repositories["https://#{@options[:smt_host]}/repo/\\$RCE/SLES11-SP3-Pool/sle-11-x86_64?credentials=NCCcredentials"] = "SLES11-SP3-Pool"
+        else
+          repositories["https://nu.novell.com/repo/\\$RCE/SLES11-SP3-Updates/sle-11-x86_64?credentials=NCCcredentials"] = "SLES11-SP3-Updates"
+          repositories["https://nu.novell.com/repo/\\$RCE/SLES11-SP3-Pool/sle-11-x86_64?credentials=NCCcredentials"] = "SLES11-SP3-Pool"
 
-        cred_helper = CredentialsHelper.new(@options, true)
-        credentials[:username] = cred_helper.username
-        credentials[:password] = cred_helper.password
-        credentials[:filename] = "NCCcredentials"
+          cred_helper = CredentialsHelper.new(@options, true)
+          credentials[:username] = cred_helper.username
+          credentials[:password] = cred_helper.password
+          credentials[:filename] = "NCCcredentials"
+        end
 
-        "sle11sp3-dockerfile.erb"
+        template_name = "sle11sp3-dockerfile.erb"
       else
         raise TemplateNotFoundError.new("Cannot find right template for #{@image_name}")
       end
@@ -86,7 +96,9 @@ module Sle2Docker
             File.expand_path("../../templates/docker_build", __FILE__),
             template_name
           )
-        )
+        ),
+        nil,
+        "<>"
       ).result(binding)
 
       File.open(File.join(tmp_dir, "Dockerfile"), "w") do |file|
