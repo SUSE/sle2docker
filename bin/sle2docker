@@ -1,4 +1,15 @@
 #!/usr/bin/env ruby
 require_relative '../lib/sle2docker'
 
-Sle2Docker::Cli.start(ARGV)
+begin
+  Sle2Docker::Cli.start(ARGV)
+rescue TemplateNotFoundError => ex
+  $stderr.printf(ex.message + "\n")
+  $stderr.printf("To list the available templates use:\n")
+  $stderr.printf("  sle2docker list\n")
+  exit(1)
+rescue Exception => e
+  $stderr.printf(e.message + "\n")
+  exit(1)
+end
+

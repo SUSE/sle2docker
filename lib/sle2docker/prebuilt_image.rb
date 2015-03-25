@@ -41,8 +41,7 @@ module Sle2Docker
 
       tmp_dir = prepare_docker_build_root
       puts 'Activating image'
-      image = Docker::Image.build_from_dir(tmp_dir)
-      image.tag(docker_tag)
+      Docker::Image.build_from_dir(tmp_dir).tag(docker_tag)
     ensure
       FileUtils.rm_rf(tmp_dir) if tmp_dir && File.exist?(tmp_dir)
     end
@@ -109,45 +108,34 @@ module Sle2Docker
     end
 
     def copy_zypper_resources(tmp_dir)
-      repos_to_copy = []
-
-      # copy services.d files
-      source = '/etc/zypp/services.d'
-      services = Dir["#{source}/*.service"]
+      services = Dir['/etc/zypp/services.d/*.service']
       if services.empty?
         fail ConfigNotFoundError,
              'No service file found under /etc/zypp/services.d'
       end
-      FileUtils.mkdir_p(File.join(tmp_dir, 'zypp', 'services.d'))
+
+      destination = FileUtils.mkdir_p(File.join(tmp_dir, 'zypp'))
+      FileUtils.cp_r('/etc/zypp/services.d', File.join(destination, 'services.d'))
+
+      repos_target_dir = File.join(destination, 'repos.d')
+      FileUtils.mkdir_p(repos_target_dir)
+
       services.each do |service|
-        FileUtils.cp(
-          service,
-          File.join(tmp_dir, 'zypp', 'services.d', File.basename(service))
-        )
-        repos_to_copy += File.readlines(service)
-                             .grep(/repo_\d+=/)
-                             .map { |match| match.split('=', 2)[1].chomp + '.repo' }
+        File.readlines(service)
+          .grep(/repo_\d+=/)
+          .map { |match| match.split('=', 2)[1].chomp + '.repo' }
+          .each do |repo|
+            FileUtils.cp(
+              File.join('/etc/zypp/repos.d', repo),
+              File.join(repos_target_dir, repo))
+          end
       end
 
-      # copy credentials.d files
       source = '/etc/zypp/credentials.d'
       if !File.exist?(source)
         fail ConfigNotFoundError, "#{source} does not exist"
       else
         FileUtils.cp_r(source, File.join(tmp_dir, 'zypp'))
-      end
-
-      # copy repositories
-      destination = File.join(tmp_dir, 'zypp', 'repos.d')
-      FileUtils.mkdir_p(destination)
-
-      repos_to_copy.each do |repo|
-        source = File.join('/etc/zypp/repos.d', repo)
-        if File.exist?(source)
-          FileUtils.cp(source, File.join(destination, repo))
-        else
-          fail ConfigNotFoundError, "Cannot find repository file #{source}"
-        end
       end
     end
 

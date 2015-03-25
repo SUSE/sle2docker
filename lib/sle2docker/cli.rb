@@ -1,4 +1,5 @@
 module Sle2Docker
+  # Entry point of the command line interface
   class Cli < Thor
     desc 'list', 'List the available templates'
     def list
@@ -50,9 +51,6 @@ module Sle2Docker
 
       prebuilt_image.activate
       puts "#{image_id} activated"
-    rescue RuntimeError => e
-      $stderr.printf(e.message + "\n")
-      exit(1)
     end
 
     map '-v' => :version
@@ -90,20 +88,9 @@ module Sle2Docker
     def show(template_name)
       template_dir = Template.kiwi_template_dir(template_name)
       builder = Builder.new(options)
-      template_file = builder.find_template_file(template_dir)
-      if template_file.end_with?('.erb')
-        template = builder.render_template(template_file)
-        puts "\n\n"
-        puts template
-      end
-    rescue ConfigNotFoundError => e
-      $stderr.printf(e.message + "\n")
-      exit(1)
-    rescue TemplateNotFoundError => ex
-      $stderr.printf(ex.message + "\n")
-      $stderr.printf("To list the available templates use:\n")
-      $stderr.printf("  sle2docker list\n")
-      exit(1)
+
+      puts "\n\n"
+      puts builder.render_template(builder.find_template_file(template_dir))
     end
 
     desc 'build TEMPLATE', 'Use TEMPLATE to build a SLE Docker image'
@@ -148,14 +135,6 @@ module Sle2Docker
         'be removed.'
       puts 'Note well: KIWI created some of these files while running as ' \
         'root user, hence root privileges are required to remove them.'
-    rescue ConfigNotFoundError => e
-      $stderr.printf(e.message + "\n")
-      exit(1)
-    rescue TemplateNotFoundError => ex
-      $stderr.printf(ex.message + "\n")
-      $stderr.printf("To list the available templates use:\n")
-      $stderr.printf("  sle2docker list\n")
-      exit(1)
     end
   end
 end
