@@ -16,3 +16,5 @@ begin
 rescue LoadError
   puts "Yard not available. To generate documentation install it with: gem install yard"
 end
+
+task default: :test
