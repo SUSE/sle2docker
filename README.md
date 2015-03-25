@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/SUSE/sle2docker.svg)](https://travis-ci.org/SUSE/sle2docker)
 [![Code Climate](https://codeclimate.com/github/SUSE/sle2docker/badges/gpa.svg)](https://codeclimate.com/github/SUSE/sle2docker)
-
+[![Test Coverage](https://codeclimate.com/github/SUSE/sle2docker/badges/coverage.svg)](https://codeclimate.com/github/SUSE/sle2docker)
 
 sle2docker is a convenience tool which creates SUSE Linux Enterprise images for
 [Docker](http://docker.com).
