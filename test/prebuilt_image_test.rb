@@ -79,8 +79,9 @@ EOF
         begin
           image = "sles12-docker-image-1.0.0"
           smt_host = "my-smt.local"
+          @options[:smt_host] = smt_host
           prebuilt_image = Sle2Docker::PrebuiltImage.new(
-            image, {smt_host: smt_host})
+            image, @options)
 
           expected = <<EOF
 FROM scratch
@@ -88,8 +89,42 @@ MAINTAINER "Flavio Castelli <fcastelli@suse.com>"
 
 ADD sles12-docker-image-1.0.0.tar.xz /
 
-RUN zypper ar -f http://my-smt.local/SUSE/Products/SLE-SERVER/12/x86_64/product \"SLE12-Pool\"
-RUN zypper ar -f http://my-smt.local/SUSE/Updates/SLE-SERVER/12/x86_64/update \"SLE12-Updates\"
+RUN zypper ar -f https://my-smt.local/SUSE/Products/SLE-SERVER/12/x86_64/product SLE12-Pool
+RUN zypper ar -f https://my-smt.local/SUSE/Updates/SLE-SERVER/12/x86_64/update SLE12-Updates
+
+RUN zypper --gpg-auto-import-keys refresh
+EOF
+
+          tmp_dir = Dir.mktmpdir("sle2docker-test")
+          prebuilt_image.create_dockerfile(tmp_dir)
+          dockerfile = File.join(tmp_dir, "Dockerfile")
+
+          assert File.exist?(dockerfile)
+          assert_equal(expected, File.read(dockerfile))
+        ensure
+          if File.exist?(tmp_dir)
+            FileUtils.rm_rf(tmp_dir)
+          end
+        end
+      end
+
+      it "creates a Dockerfile using SMT repositories not using https" do
+        begin
+          image = "sles12-docker-image-1.0.0"
+          smt_host = "my-smt.local"
+          @options[:smt_host] = smt_host
+          @options[:disable_https] = true
+          prebuilt_image = Sle2Docker::PrebuiltImage.new(
+            image, @options)
+
+          expected = <<EOF
+FROM scratch
+MAINTAINER "Flavio Castelli <fcastelli@suse.com>"
+
+ADD sles12-docker-image-1.0.0.tar.xz /
+
+RUN zypper ar -f http://my-smt.local/SUSE/Products/SLE-SERVER/12/x86_64/product SLE12-Pool
+RUN zypper ar -f http://my-smt.local/SUSE/Updates/SLE-SERVER/12/x86_64/update SLE12-Updates
 
 RUN zypper --gpg-auto-import-keys refresh
 EOF
@@ -200,8 +235,8 @@ MAINTAINER "Flavio Castelli <fcastelli@suse.com>"
 
 ADD sles11sp3-docker-image-1.0.0.tar.xz /
 
-RUN zypper ar -f https://nu.novell.com/repo/\\$RCE/SLES11-SP3-Updates/sle-11-x86_64?credentials=NCCcredentials \"SLES11-SP3-Updates\"
-RUN zypper ar -f https://nu.novell.com/repo/\\$RCE/SLES11-SP3-Pool/sle-11-x86_64?credentials=NCCcredentials \"SLES11-SP3-Pool\"
+RUN zypper ar -f https://nu.novell.com/repo/\\$RCE/SLES11-SP3-Updates/sle-11-x86_64?credentials=NCCcredentials SLES11-SP3-Updates
+RUN zypper ar -f https://nu.novell.com/repo/\\$RCE/SLES11-SP3-Pool/sle-11-x86_64?credentials=NCCcredentials SLES11-SP3-Pool
 
 RUN mkdir /etc/zypp/credentials.d
 RUN echo \"username=test_username\" > /etc/zypp/credentials.d/NCCcredentials
@@ -229,8 +264,9 @@ EOF
         begin
           image = "sles11sp3-docker-image-1.0.0"
           smt_host = "my-smt.local"
+          @options[:smt_host] = smt_host
           prebuilt_image = Sle2Docker::PrebuiltImage.new(
-            image, {smt_host: smt_host})
+            image, @options)
 
           expected = <<EOF
 FROM scratch
@@ -238,8 +274,8 @@ MAINTAINER "Flavio Castelli <fcastelli@suse.com>"
 
 ADD sles11sp3-docker-image-1.0.0.tar.xz /
 
-RUN zypper ar -f https://my-smt.local/repo/\\$RCE/SLES11-SP3-Updates/sle-11-x86_64?credentials=NCCcredentials \"SLES11-SP3-Updates\"
-RUN zypper ar -f https://my-smt.local/repo/\\$RCE/SLES11-SP3-Pool/sle-11-x86_64?credentials=NCCcredentials \"SLES11-SP3-Pool\"
+RUN zypper ar -f https://my-smt.local/repo/\\$RCE/SLES11-SP3-Updates/sle-11-x86_64?credentials=NCCcredentials SLES11-SP3-Updates
+RUN zypper ar -f https://my-smt.local/repo/\\$RCE/SLES11-SP3-Pool/sle-11-x86_64?credentials=NCCcredentials SLES11-SP3-Pool
 
 
 RUN zypper --gpg-auto-import-keys refresh

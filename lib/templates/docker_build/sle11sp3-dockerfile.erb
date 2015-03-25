@@ -3,9 +3,8 @@ MAINTAINER "Flavio Castelli <fcastelli@suse.com>"
 
 ADD <%= prebuilt_image %> /
 
-<% repositories.each do |url, name| %>
-RUN zypper ar -f <%= url %> "<%= name %>"
-<% end %>
+RUN zypper ar -f http<%= "s" if enable_https %>://<%= host %>/repo/\$RCE/SLES11-SP3-Updates/sle-11-x86_64?credentials=NCCcredentials SLES11-SP3-Updates
+RUN zypper ar -f http<%= "s" if enable_https %>://<%= host %>/repo/\$RCE/SLES11-SP3-Pool/sle-11-x86_64?credentials=NCCcredentials SLES11-SP3-Pool
 
 <% if !credentials.empty? %>
 RUN mkdir /etc/zypp/credentials.d

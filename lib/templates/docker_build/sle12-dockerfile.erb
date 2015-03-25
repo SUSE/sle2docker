@@ -3,14 +3,13 @@ MAINTAINER "Flavio Castelli <fcastelli@suse.com>"
 
 ADD <%= prebuilt_image %> /
 
-<% if repositories.empty? %>
+<% if host %>
+RUN zypper ar -f http<%= "s" if enable_https %>://<%= host %>/SUSE/Products/SLE-SERVER/12/x86_64/product SLE12-Pool
+RUN zypper ar -f http<%= "s" if enable_https %>://<%= host %>/SUSE/Updates/SLE-SERVER/12/x86_64/update SLE12-Updates
+<% else %>
 ADD zypp/credentials.d /etc/zypp/credentials.d
 ADD zypp/repos.d /etc/zypp/repos.d
 ADD zypp/services.d /etc/zypp/services.d
-<% else %>
-<% repositories.each do |url, name| %>
-RUN zypper ar -f <%= url %> "<%= name %>"
-<% end %>
 <% end %>
 
 RUN zypper --gpg-auto-import-keys refresh

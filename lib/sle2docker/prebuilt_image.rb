@@ -61,22 +61,15 @@ module Sle2Docker
     def create_dockerfile(tmp_dir)
       repositories  = {}
       credentials   = {}
+      enable_https  = !@options[:disable_https]
 
       case @base_system
       when SUPPORTED_BASE_SYSTEMS::SLE12
-        if @options[:smt_host]
-          repositories["http://#{@options[:smt_host]}/SUSE/Products/SLE-SERVER/12/x86_64/product"] = "SLE12-Pool"
-          repositories["http://#{@options[:smt_host]}/SUSE/Updates/SLE-SERVER/12/x86_64/update"] = "SLE12-Updates"
-        end
+        host = @options[:smt_host]
         template_name = "sle12-dockerfile.erb"
       when SUPPORTED_BASE_SYSTEMS::SLE11SP3
-        if @options[:smt_host]
-          repositories["https://#{@options[:smt_host]}/repo/\\$RCE/SLES11-SP3-Updates/sle-11-x86_64?credentials=NCCcredentials"] = "SLES11-SP3-Updates"
-          repositories["https://#{@options[:smt_host]}/repo/\\$RCE/SLES11-SP3-Pool/sle-11-x86_64?credentials=NCCcredentials"] = "SLES11-SP3-Pool"
-        else
-          repositories["https://nu.novell.com/repo/\\$RCE/SLES11-SP3-Updates/sle-11-x86_64?credentials=NCCcredentials"] = "SLES11-SP3-Updates"
-          repositories["https://nu.novell.com/repo/\\$RCE/SLES11-SP3-Pool/sle-11-x86_64?credentials=NCCcredentials"] = "SLES11-SP3-Pool"
-
+        host = @options[:smt_host] || "nu.novell.com"
+        if @options[:smt_host].nil? 
           cred_helper = CredentialsHelper.new(@options, true)
           credentials[:username] = cred_helper.username
           credentials[:password] = cred_helper.password
