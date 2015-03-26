@@ -3,7 +3,7 @@ require_relative '../lib/sle2docker'
 
 begin
   Sle2Docker::Cli.start(ARGV)
-rescue TemplateNotFoundError => ex
+rescue Sle2Docker::TemplateNotFoundError => ex
   $stderr.printf(ex.message + "\n")
   $stderr.printf("To list the available templates use:\n")
   $stderr.printf("  sle2docker list\n")
