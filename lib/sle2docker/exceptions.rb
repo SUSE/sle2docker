@@ -13,4 +13,7 @@ module Sle2Docker
 
   class PrebuiltImageVerificationError < RuntimeError
   end
+
+  class NotAdminError < RuntimeError
+  end
 end
