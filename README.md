@@ -2,16 +2,17 @@
 [![Code Climate](https://codeclimate.com/github/SUSE/sle2docker/badges/gpa.svg)](https://codeclimate.com/github/SUSE/sle2docker)
 [![Test Coverage](https://codeclimate.com/github/SUSE/sle2docker/badges/coverage.svg)](https://codeclimate.com/github/SUSE/sle2docker)
 
+
 sle2docker is a convenience tool which creates SUSE Linux Enterprise images for
-[Docker](http://docker.com).
+Docker.
 
-The tool relies on [KIWI](https://github.com/openSUSE/kiwi) and Docker itself
-to build the images.
+The tool takes advantage of pre-built Docker images distributed by SUSE to
+create the base Docker image that users can later customize using Docker's
+integrated build system. The pre-built images are distributed by SUSE as RPMs.
 
-Packages can be fetched either from SUSE Customer Center (SCC) or from a local
-Subscription Management Tool (SMT).
-
-Using DVD sources is currently unsupported.
+Previous versions of the tool built the Docker images from KIWI templates
+distributed by SUSE. This is still possible, but is deprecated: the recommended
+way to operate is by using the pre-built images created by SUSE.
 
 # Requirements
 
@@ -40,6 +41,22 @@ SLE12 would be called `sle2docker.ruby2.1`).
 
 # How it works
 
+sle2docker can be used either to build the Docker images from sources or to
+use the pre-built ones shipped by SUSE via RPMs.
+
+Using the pre-built images is the recommended way. Building images from sources
+is going to be removed in the future.
+
+## Using the pre-built images
+
+SUSE publishes pre-built Docker images for different version of SUSE Linux
+Enterprise via RPMs.
+
+sle2docker takes care of importing the official images and activating them. The
+activation process adds the right repositories and credentials to the image.
+
+## Building the images from sources (deprecated)
+
 The sle2docker gem comes with a set of supported SLE templates. These are KIWI
 source files which are filled with the informations provided by the user at
 runtime.
@@ -63,6 +80,94 @@ system.
 
 # Usage
 
+This section covers both the process of building the images from sources (now
+deprecated) and the new recommended way of activating the pre-built images
+released by SUSE.
+
+## Using the pre-built images
+
+To use a pre-built image it is necessary to activate it. The activation process
+imports the pre-built image and adds the right repositories to it.
+
+To activate the pre-built image use the following command:
+
+```
+# sle2docker activate IMAGE_NAME
+```
+
+Note well: this command requires administrator privileges to run.
+
+
+To list the available pre-built images use the following command:
+
+```
+$ sle2docker list
+Available pre-built images:
+ - sles11sp3-docker.x86_64-1.0.0-Build1.3
+ - sles12-docker.x86_64-1.0.0-Build7.4
+
+Available templates:
+  - SLE11SP2
+  - SLE11SP3
+  - SLE12
+```
+
+### Activating SLE12 images
+
+Currently the activation of a SLE12 image copies the SUSE Customer Center credentials
+from the Docker host into the final image.
+
+### Activating SLE11 images
+
+The activation of a SLE11 image requires the user to enter his NCC credentials.
+By default the mirror credentials of NCC are asked in an interactive way, however
+it is also possible to specify them from the command line:
+
+```
+sle2docker activate -u <username> -p <password> IMAGE
+```
+
+It is possible to specify only the username and let sle2docker ask the password later
+in the interactive way:
+
+```
+sle2docker activate -u <username> IMAGE
+```
+
+### Subscription Management Tool integration
+
+It is possible to download all the required packages from a local
+Subscription Management Tool (SMT) instance:
+
+```
+sle2docker activate -s SMT_SERVER_HOSTNAME/repo IMAGE
+```
+
+By default sle2docker assumes the contents of the SMT server are served over
+HTTPS. To force the retrieval of the package over plain HTTP use the
+following command:
+
+```
+sle2docker activate -s SMT_SERVER_HOSTNAME/repo --disable-https TEMPLATE
+```
+
+Example: Say the FQDN of your SMT is mysmt.company.com and you want to activate a SLE12 Docker image.
+The corresponding call to sle2docker would look like this:
+
+```
+sle2docker activate -s mysmt.company.com/repo --disable-https sles12-docker.x86_64-1.0.0-Build7.4
+```
+
+By default sle2docker expects the SMT instance to not require any form of
+authentication. However it is possible to specify the access credentials by
+using the following command:
+
+```
+sle2docker activate -s SMT_SERVER_HOSTNAME -u USERNAME -p PASSWORD IMAGE
+```
+
+## Building the images from sources (deprecated)
+
 To build a template just use the following command:
 
 ```
@@ -75,14 +180,14 @@ A list of the available templates may be obtained by running:
 sle2docker list
 ```
 
-A templated rendered with user provided data can be printed by using the
+A template rendered with user provided data can be printed by using the
 following command:
 
 ```
 sle2docker show TEMPLATE
 ```
 
-## SUSE Customer Center integration
+### SUSE Customer Center integration
 
 By default sle2docker downloads all the required packages from SUSE
 Customer Center (SCC). Before the build starts sle2docker ask the user
@@ -94,9 +199,9 @@ sle2docker build -u USERNAME -p PASSWORD TEMPLATE_NAME
 ```
 
 
-## Subscription Management Tool integration
+### Subscription Management Tool integration
 
-It is possible to download all the required packages from a local 
+It is possible to download all the required packages from a local
 Subscription Management Tool (SMT) instance:
 
 ```
@@ -126,7 +231,7 @@ using the following command:
 sle2docker build -s SMT_SERVER_HOSTNAME -u USERNAME -p PASSWORD TEMPLATE
 ```
 
-## Additional repos for the base image
+### Additional repos for the base image
 
 When building images with `sle2docker`, only the main and updates repositories
 is used for installing needed packages. If you want to obtain extra packages
@@ -145,7 +250,9 @@ You may then add your own `<repository>` section:
 
 ### Preservation of repository information
 
-If you want to preserve the repository information in the final image, you need to supply the `--include-build-repos` parameter to the `build` command.
+If you want to preserve the repository information in the final image, you need
+to supply the `--include-build-repos` parameter to the `build` command.
+
 
 # License
 

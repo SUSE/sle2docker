@@ -34,6 +34,7 @@ EOD
   s.add_development_dependency 'minitest'
   s.add_development_dependency 'mocha'
   s.add_development_dependency 'rake'
+  s.add_development_dependency 'ronn'
   s.add_development_dependency 'rubocop'
   s.add_development_dependency 'yard'
   s.files        = `git ls-files`.split("\n")

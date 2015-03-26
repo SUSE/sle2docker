@@ -1,2 +1,4 @@
 pkg
 Vagrantfile
+package/sle2docker.8
+package/sle2docker.8.html

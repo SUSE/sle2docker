@@ -22,3 +22,7 @@ require 'rubocop/rake_task'
 RuboCop::RakeTask.new
 
 task default: :test
+
+task :man do
+  system "ronn #{File.expand_path('../package/sle2docker.8.ronn', __FILE__)}"
+end
