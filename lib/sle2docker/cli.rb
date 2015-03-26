@@ -3,10 +3,7 @@ module Sle2Docker
   class Cli < Thor
     desc 'list', 'List the available templates'
     def list
-      puts 'Available templates:'
-      Template.list_kiwi.each { |template| puts "  - #{template}" }
-
-      puts "\nAvailable pre-built images:"
+      puts 'Available pre-built images:'
       prebuilt_images = PrebuiltImage.list
       if prebuilt_images.empty?
         puts 'No pre-built image found.'
@@ -16,6 +13,10 @@ module Sle2Docker
       else
         prebuilt_images.each { |image| puts " - #{image}" }
       end
+
+      puts "\nAvailable templates:"
+      Template.list_kiwi.each { |template| puts "  - #{template}" }
+      puts "\nNote well: building Docker images from sources is deprecated"
     end
 
     desc 'activate IMAGE_NAME', 'Import and activate a pre-built image'
