@@ -43,6 +43,11 @@ module Sle2Docker
                   desc: 'Do not use HTTPS when accessing repositories'
     def activate(image_name)
       fail NotAdminError, 'This command requires root privileges' if Process.uid != 0
+      begin
+        Docker.info
+      rescue Excon::Errors::SocketError => e
+        fail "Docker is not running: #{e.message}"
+      end
 
       prebuilt_image = Sle2Docker::PrebuiltImage.new(image_name, options)
       image_tag = prebuilt_image.docker_tag
