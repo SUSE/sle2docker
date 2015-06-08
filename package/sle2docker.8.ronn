@@ -14,25 +14,16 @@ The tool takes advantage of pre-built Docker images distributed by SUSE to
 create the base Docker image that users can later customize using Docker's
 integrated build system. The pre-built images are distributed by SUSE as RPMs.
 
-Previous versions of the tool built the Docker images from KIWI templates
-distributed by SUSE. This is still possible, but is deprecated: the recommended
-way to operate is by using the pre-built images created by SUSE.
-
 ## REQUIREMENTS
 
 Docker must be running on the system and the user invoking sle2docker must
 have the rights to interact with it.
 
-## USING THE PRE-BUILT IMAGES
-
-To use a pre-built image it is necessary to activate it. The activation process
-imports the pre-built image and adds the right repositories to it.
+## USAGE
 
 To activate the pre-built image use the following command:
 
 `sle2docker activate IMAGE_NAME`
-
-Note well: this command requires administrator privileges to run.
 
 To list the available pre-built images use the following command:
 
@@ -81,80 +72,11 @@ using the following command:
 
 `sle2docker activate -s SMT_SERVER_HOSTNAME -u USERNAME -p PASSWORD IMAGE`
 
-## BUILDING THE IMAGES FROM SOURCES (DEPRECATED)
-
-To build a template use the following command:
-
-`sle2docker build TEMPLATE`
-
-**Note well:** building images from templates is deprecated. It is recommended
-to use the pre-built images.
-
-A list of the available templates can be obtained by
-running:
-
-`sle2docker list`
-
-A template rendered with user provided data can be printed by using the
-following command:
-
-`sle2docker show TEMPLATE`
-
-### SUSE Customer Center Integration
-
-By default sle2docker downloads all the required packages from SUSE
-Customer Center (SCC). Before the build starts sle2docker ask the user
-his credentials. It is possible to start a build in a non interactive way by
-using the following command:
-
-`sle2docker build -u USERNAME -p PASSWORD TEMPLATE_NAME`
-
-
-### Subscription Management Tool integration
-
-It is possible to download all the required packages from a local
-Subscription Management Tool (SMT) instance:
-
-`sle2docker build -s SMT_SERVER_HOSTNAME TEMPLATE`
-
-By default sle2docker assumes the contents of the SMT server are served over
-HTTPS. To force the retrieval of the package over plain HTTP use the
-following command:
-
-`sle2docker build -s SMT_SERVER_HOSTNAME --disable-https TEMPLATE`
-
-By default sle2docker expects the SMT instance to not require any form of
-authentication. However it is possible to specify the access credentials by
-using the following command:
-
-`sle2docker build -s SMT_SERVER_HOSTNAME -u USERNAME -p PASSWORD TEMPLATE`
-
-### Implementation details
-
-sle2docker gem comes with a set of supported SLE templates. These are KIWI
-source files which are filled with the informations provided by the user at
-runtime.
-
-The image creation happens inside of the `opensuse/kiwi` Docker image. This has
-to be done because on recent systems (like SLE12) KIWI cannot create SLE11
-images. That happens because building a SLE11 systems requires the
-`db45-utils` package to be installed on the host system; this
-package is obsolete and is not available on SLE12.
-
-The Docker image used by sle2docker is based on openSUSE and it's freely
-downloadable from the Docker Hub. The image is built using Docker's build system
-by starting from the official openSUSE image.
-The `Dockerfile` used to create this image can be found inside of
-the https://github.com/openSUSE/docker-containers repository.
-
-sle2docker automatically fetches the `opensuse/kiwi` image if not found on the
-system.
-
 ## EXIT CODES
   sle2docker sets the following exit codes:
 
-  * 0: Build successful
-  * 1: Build failure
+  * 0: Success
+  * 1: Failure
 
 ## AUTHOR
   Flavio Castelli <fcastelli@suse.com>
