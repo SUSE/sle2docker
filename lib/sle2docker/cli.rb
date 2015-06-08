@@ -15,46 +15,18 @@ module Sle2Docker
       end
     end
 
-    desc 'activate IMAGE_NAME', 'Import and activate a pre-built image'
-    long_desc 'Import a pre-built image and add the official repositories to it'
-    method_option :username,
-                  aliases: '-u',
-                  type: :string,
-                  default: nil,
-                  desc: 'Username required to access repositories'
-    method_option :password,
-                  aliases: '-p',
-                  type: :string,
-                  default: '',
-                  desc: 'Password required to access repositories'
-    method_option :smt_host,
-                  aliases: ['-s', '--smt-host'],
-                  type: :string,
-                  default: nil,
-                  desc: 'SMT machine hosting the repositories'
-    method_option :disable_https,
-                  aliases: ['--disable-https'],
-                  type: :boolean,
-                  default: false,
-                  desc: 'Do not use HTTPS when accessing repositories'
+    desc 'activate IMAGE_NAME', 'Activate a pre-built image'
     def activate(image_name)
-      fail NotAdminError, 'This command requires root privileges' if Process.uid != 0
-      begin
-        Docker.info
-      rescue Excon::Errors::SocketError => e
-        fail "Docker is not running: #{e.message}"
-      end
+      ensure_can_access_dockerd
 
       prebuilt_image = Sle2Docker::PrebuiltImage.new(image_name, options)
-      image_tag = prebuilt_image.docker_tag
-      image_id  = "#{image_tag['repo']}:#{image_tag['tag']}"
-      if Docker::Image.exist?(image_id)
-        warn "Image #{image_id} already exists. Exiting"
+      if prebuilt_image.activated?
+        warn 'Image has already been activated. Exiting'
         exit(0)
       end
 
       prebuilt_image.activate
-      puts "#{image_id} activated"
+      puts "#{prebuilt_image.image_id} activated"
     end
 
     map '-v' => :version
@@ -63,5 +35,13 @@ module Sle2Docker
       puts Sle2Docker::VERSION
     end
 
+    private
+
+    def ensure_can_access_dockerd
+      output = `docker info`
+      if $CHILD_STATUS.exitstatus != 0
+        raise output
+      end
+    end
   end
 end

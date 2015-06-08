@@ -8,8 +8,7 @@ rescue Sle2Docker::TemplateNotFoundError => ex
   $stderr.printf("To list the available templates use:\n")
   $stderr.printf("  sle2docker list\n")
   exit(1)
-rescue Exception => e
+rescue StandardError => e
   $stderr.printf(e.message + "\n")
   exit(1)
 end
-

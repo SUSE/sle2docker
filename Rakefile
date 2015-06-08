@@ -23,7 +23,7 @@ RuboCop::RakeTask.new
 
 task default: :test
 
-desc "Generate man pages"
+desc 'Generate man pages'
 task :man do
   system "ronn #{File.expand_path('../package/sle2docker.8.ronn', __FILE__)}"
 end
