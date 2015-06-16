@@ -1,3 +1,10 @@
+Tue Jun 16 23:04:11 CEST 2015  Flavio Castelli <flavio@castelli.name>
+
+	* Version 0.4.0:
+	- Drop old build system: do no longer build images using kiwi
+	- Revisit the activation code: it is no longer necessary to copy
+		the org credentials or the host repositories into the final image
+
 Mon Apr 20 17:46:52 CEST 2015  Flavio Castelli <flavio@castelli.name>
 
 	* Version 0.3.0 rc1:
