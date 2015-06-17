@@ -1,11 +1,17 @@
-Tue Jun 16 23:04:11 CEST 2015  Flavio Castelli <flavio@castelli.name>
+Wed Jun 17 10:35:53 CEST 2015  Flavio Castelli <fcastelli@suse.com>
+
+	* Version 0.4.1:
+		- Fix formatting inside of man page
+		- Fix email address inside of Changelog
+
+Tue Jun 16 23:04:11 CEST 2015  Flavio Castelli <fcastelli@suse.com>
 
 	* Version 0.4.0:
 	- Drop old build system: do no longer build images using kiwi
 	- Revisit the activation code: it is no longer necessary to copy
 		the org credentials or the host repositories into the final image
 
-Mon Apr 20 17:46:52 CEST 2015  Flavio Castelli <flavio@castelli.name>
+Mon Apr 20 17:46:52 CEST 2015  Flavio Castelli <fcastelli@suse.com>
 
 	* Version 0.3.0 rc1:
 		- Added support for pre-built Docker images.
@@ -16,7 +22,7 @@ Mon Dec 01 17:38:53 CET 2014  Flavio Castelli <fcastelli@suse.com>
 		- Make possible to include the build time repositories into the final
 			image.
 
-Wed Nov 12 15:46:38 CET 2014  Flavio Castelli <flavio@castelli.name>
+Wed Nov 12 15:46:38 CET 2014  Flavio Castelli <fcastelli@suse.com>
 
 	* Version 0.2.3:
 		- Handle http proxy
