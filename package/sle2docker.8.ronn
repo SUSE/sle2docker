@@ -130,7 +130,8 @@ RUN zypper -n in vim
 ```
 
 ## EXIT CODES
-  sle2docker sets the following exit codes:
+
+sle2docker sets the following exit codes:
 
   * 0: Success
   * 1: Failure
@@ -139,7 +140,14 @@ RUN zypper -n in vim
   Flavio Castelli <fcastelli@suse.com>
 
 ## LINKS
-  Project on GitHub: https://github.com/SUSE/sle2docker
-  SUSE documentation: https://www.suse.com/documentation/sles-12/dockerquick/data/dockerquick.html
-  Docker's integrated build system: http://docs.docker.com/reference/builder/
-  container-suseconnect: https://github.com/SUSE/container-suseconnect
+Project on GitHub:
+  https://github.com/SUSE/sle2docker
+
+SUSE documentation:
+  https://www.suse.com/documentation/sles-12/dockerquick/data/dockerquick.html
+
+Docker's integrated build system:
+  http://docs.docker.com/reference/builder/
+
+container-suseconnect:
+  https://github.com/SUSE/container-suseconnect
