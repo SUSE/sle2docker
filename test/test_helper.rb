@@ -1,7 +1,13 @@
-require File.expand_path('../../lib/sle2docker',__FILE__)
+require 'codeclimate-test-reporter'
+CodeClimate::TestReporter.start
+
+require File.expand_path('../../lib/sle2docker', __FILE__)
+
 require 'minitest/autorun'
 require 'stringio'
 require 'fakefs/safe'
+
+# rubocop:disable Style/Documentation, Lint/Eval
 
 class Object
   def capture(stream)
@@ -17,28 +23,27 @@ class Object
   end
 end
 
-class MiniTest::Test
-
-  def read_fixture(name)
-    File.read(File.expand_path("../fixtures/#{name}", __FILE__))
+module MiniTest
+  class Test
+    def read_fixture(name)
+      File.read(File.expand_path("../fixtures/#{name}", __FILE__))
+    end
   end
-
 end
 
 class FakeStdin
-
   # @param [Array[String]] fake_input
   def initialize(fake_input)
     @fake_input = fake_input.reverse
   end
 
-  def gets()
+  def gets
     @fake_input.pop
   end
 
-  def noecho()
+  def noecho
     yield(self)
   end
-
 end
 
+require 'mocha/mini_test'

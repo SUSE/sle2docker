@@ -1,5 +1,5 @@
 sle2docker(8) - Create SLE images for Docker
-=======================================================
+============================================
 
 ## SYNOPSIS
 
@@ -7,98 +7,139 @@ sle2docker(8) - Create SLE images for Docker
 
 ## DESCRIPTION
 
-sle2docker is a convenience tool which creates SUSE Linux Enterprise images for
-Docker.
+sle2docker is a convenience tool which imports the pre-built SUSE Linux Enterprise
+images for Docker.
 
-The tool relies on KIWI and Docker itself to build the images.
+The tool takes advantage of pre-built Docker images distributed by SUSE to
+create the base Docker image that users can later customize using Docker's
+integrated build system. The pre-built images are distributed by SUSE as RPMs.
 
-Packages can be fetched either from SUSE Customer Center (SCC) or from a local
-Subscription Management Tool (SMT).
+Pre-built images do not have repositories configured but zypper will
+automatically have access to the right repositories when the Docker host has a
+SLE subscription that provides access to the product used in the image. For
+more details read the "Customizing the images" section below.
 
-Using DVD sources is currently unsupported.
+Previous versions of the tool built the Docker images from KIWI templates
+distributed by SUSE. This is no longer possible.
 
 ## REQUIREMENTS
+
+Ruby is required to execute the sle2docker program.
 
 Docker must be running on the system and the user invoking sle2docker must
 have the rights to interact with it.
 
 ## USAGE
 
-To build a template use the following command:
-
-`sle2docker build TEMPLATE`
-
-A list of the available templates can be obtained by running:
+To list the available pre-built images use the following command:
 
 `sle2docker list`
 
-A templated rendered with user provided data can be printed by using the
-following command:
+To activate the pre-built image use the following command:
 
-`sle2docker show TEMPLATE`
+`sle2docker activate IMAGE_NAME`
 
-## SUSE CUSTOMER CENTER INTEGRATION
+## Customizing the images
 
-By default sle2docker downloads all the required packages from SUSE
-Customer Center (SCC). Before the build starts sle2docker ask the user
-his credentials. It is possible to start a build in a non interactive way by
-using the following command:
-
-`sle2docker build -u USERNAME -p PASSWORD TEMPLATE_NAME`
+To create custom Docker images based on the official ones use
+Docker's integrated build system.
 
 
-## SUBSCRIPTION MANAGEMENT TOOL INTEGRATION
+The pre-built images do not have any repository configured. They
+contain a zypper service(container-suseconnect) that
+contacts either the SUSE Customer Center (SCC) or your Subscription
+Management Tool (SMT) server according to the configuration of the SLE host
+running the Docker container. The service obtains the list of repositories
+available for the product used by the Docker image.
 
-It is possible to download all the required packages from a local
-Subscription Management Tool (SMT) instance:
+There is no need to add any credential to the Docker image because the machine
+credentials are automatically injected into the container by the docker daemon.
+These are injected inside of the `/run/secrets` directory. The same applies to
+the `/etc/SUSEConnect` file of the host system, which is automatically injected
+into the `/run/secrets`.
 
-`sle2docker build -s SMT_SERVER_HOSTNAME TEMPLATE`
+The contents of the `/run/secrets` directory are never committed to a Docker
+image, hence there's no risk of leaking your credentials.
 
-By default sle2docker assumes the contents of the SMT server are served over
-HTTPS. To force the retrieval of the package over plain HTTP use the
-following command:
+To obtain the list of repositories invoke:
 
-`sle2docker build -s SMT_SERVER_HOSTNAME --disable-https TEMPLATE`
+`zypper ref -s`
 
-By default sle2docker expects the SMT instance to not require any form of
-authentication. However it is possible to specify the access credentials by
-using the following command:
+This will automatically add all the repositories to your container. For each
+repository added to the system a new file is going to be created under
+`/etc/zypp/repos.d`. The URLs of these repositories include an access token
+that automatically expires after 12 hours. To renew the token just call the
+`zypper ref -s` command. It is totally fine, and secure, to commit these files
+to a Docker image.
 
-`sle2docker build -s SMT_SERVER_HOSTNAME -u USERNAME -p PASSWORD TEMPLATE`
+If you want to use a different set of credentials, place a custom
+`/etc/zypp/credentials.d/SCCcredentials` with the machine credentials
+having the subscription you want to use inside of the Docker image.
+The same applies to the `SUSEConnect` file: if you want to override the one
+available on the host system running the Docker container you have to add a
+custom `/etc/SUSEConnect` file inside of the Docker image.
 
+### Creating a custom SLE12 image
+
+This Dockerfile creates a simple Docker image based on SLE12:
+
+```
+FROM suse/sles12:latest
+
+RUN zypper --gpg-auto-import-keys ref -s
+RUN zypper -n in vim
+```
+
+When the Docker host machine is registered against an internal SMT
+server the Docker image requires the ssl certificate used by SMT:
+
+```
+FROM suse/sles12:latest
+
+# Import the crt file of our private SMT server
+ADD http://smt.test.lan/smt.crt /etc/pki/trust/anchors/smt.crt
+RUN update-ca-certificates
+
+RUN zypper --gpg-auto-import-keys ref -s
+RUN zypper -n in vim
+```
+
+### Creating a custom SLE11SP3 image
+
+This Dockerfile creates a simple Docker image based on SLE12:
+
+```
+FROM suse/sles11sp3:latest
+
+RUN zypper --gpg-auto-import-keys ref -s
+RUN zypper -n in vim
+```
+
+When the Docker host machine is registered against an internal SMT
+server the Docker image requires the ssl certificate used by SMT:
+
+```
+FROM suse/sles11sp3:latest
+
+# Import the crt file of our private SMT server
+ADD http://smt.test.lan/smt.crt /etc/ssl/certs/smt.pem
+RUN c_rehash /etc/ssl/certs
+
+RUN zypper --gpg-auto-import-keys ref -s
+RUN zypper -n in vim
+```
 
 ## EXIT CODES
   sle2docker sets the following exit codes:
 
-  * 0: Build successful
-  * 1: Build failure
-
-
-## IMPLEMENTATION
-
-sle2docker gem comes with a set of supported SLE templates. These are KIWI
-source files which are filled with the informations provided by the user at
-runtime.
-
-The image creation happens inside of the `opensuse/kiwi` Docker image. This has
-to be done because on recent systems (like SLE12) KIWI cannot create SLE11
-images. That happens because building a SLE11 systems requires the
-`db45-utils` package to be installed on the host system; this
-package is obsolete and is not available on SLE12.
-
-The Docker image used by sle2docker is based on openSUSE and it's freely
-downloadable from the Docker Hub. The image is built using Docker's build system
-by starting from the official openSUSE image.
-The `Dockerfile` used to create this image can be found inside of
-the https://github.com/openSUSE/docker-containers repository.
-
-sle2docker automatically fetches the `opensuse/kiwi` image if not found on the
-system.
-
+  * 0: Success
+  * 1: Failure
 
 ## AUTHOR
   Flavio Castelli <fcastelli@suse.com>
 
 ## LINKS
   Project on GitHub: https://github.com/SUSE/sle2docker
-
+  SUSE documentation: https://www.suse.com/documentation/sles-12/dockerquick/data/dockerquick.html
+  Docker's integrated build system: http://docs.docker.com/reference/builder/
+  container-suseconnect: https://github.com/SUSE/container-suseconnect
