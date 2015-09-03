@@ -123,7 +123,7 @@ RUN zypper -n in vim
 
 ## Creating a custom SLE11SP3 image
 
-This Dockerfile creates a simple Docker image based on SLE12:
+This Dockerfile creates a simple Docker image based on SLE11:
 
 ```
 FROM suse/sles11sp3:latest
