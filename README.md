@@ -103,7 +103,7 @@ This Dockerfile creates a simple Docker image based on SLE12:
 ```
 FROM suse/sles12:latest
 
-RUN zypper --gpg-auto-import-keys ref -s
+RUN zypper ref -s
 RUN zypper -n in vim
 ```
 
@@ -117,7 +117,7 @@ FROM suse/sles12:latest
 ADD http://smt.test.lan/smt.crt /etc/pki/trust/anchors/smt.crt
 RUN update-ca-certificates
 
-RUN zypper --gpg-auto-import-keys ref -s
+RUN zypper ref -s
 RUN zypper -n in vim
 ```
 
@@ -128,7 +128,7 @@ This Dockerfile creates a simple Docker image based on SLE11:
 ```
 FROM suse/sles11sp3:latest
 
-RUN zypper --gpg-auto-import-keys ref -s
+RUN zypper ref -s
 RUN zypper -n in vim
 ```
 
@@ -142,7 +142,7 @@ FROM suse/sles11sp3:latest
 ADD http://smt.test.lan/smt.crt /etc/ssl/certs/smt.pem
 RUN c_rehash /etc/ssl/certs
 
-RUN zypper --gpg-auto-import-keys ref -s
+RUN zypper ref -s
 RUN zypper -n in vim
 ```
 
