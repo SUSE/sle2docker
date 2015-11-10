@@ -2,6 +2,10 @@
 require_relative '../lib/sle2docker'
 
 begin
+  # raise excon timeout values, needed on some VMs with bad I/O
+  Excon.defaults[:write_timeout] = 1000
+  Excon.defaults[:read_timeout] = 1000
+
   Sle2Docker::Cli.start(ARGV)
 rescue Sle2Docker::TemplateNotFoundError => ex
   $stderr.printf(ex.message + "\n")
