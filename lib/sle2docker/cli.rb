@@ -15,33 +15,28 @@ module Sle2Docker
       end
     end
 
+    # rubocop:disable Metrics/LineLength
     desc 'activate IMAGE_NAME', 'Activate a pre-built image'
     method_option :all,
-      desc:    "Activate all the available pre-built images",
-      type:    :boolean,
-      default: false,
-      aliases: "-a"
+                  desc:    'Activate all the available pre-built images',
+                  type:    :boolean,
+                  default: false,
+                  aliases: '-a'
     def activate(image_name = nil)
       ensure_can_access_dockerd
 
-      if options["all"]
-        prebuilt_images = PrebuiltImage.list.map { |img| Sle2Docker::PrebuiltImage.new(img, options) }
+      if options['all']
+        images = PrebuiltImage.list.map { |img| Sle2Docker::PrebuiltImage.new(img, options) }
       elsif !image_name.nil?
-        prebuilt_images = [Sle2Docker::PrebuiltImage.new(image_name, options)]
+        images = [Sle2Docker::PrebuiltImage.new(image_name, options)]
       else
-        puts "You have to specify an image name."
+        puts 'You have to specify an image name.'
         exit 1
       end
 
-      prebuilt_images.each do |image|
-        if image.activated?
-          warn "Image '#{image.image_id}' has already been activated."
-        else
-          image.activate
-          puts "#{image.image_id} activated"
-        end
-      end
+      activate_images(images)
     end
+    # rubocop:enable Metrics/LineLength
 
     map '-v' => :version
     desc 'version', 'Display version'
@@ -53,8 +48,17 @@ module Sle2Docker
 
     def ensure_can_access_dockerd
       output = `docker info`
-      if $CHILD_STATUS.exitstatus != 0
-        raise output
+      fail output if $CHILD_STATUS.exitstatus != 0
+    end
+
+    def activate_images(images)
+      images.each do |image|
+        if image.activated?
+          warn "Image '#{image.image_id}' has already been activated."
+        else
+          image.activate
+          puts "#{image.image_id} activated"
+        end
       end
     end
   end
