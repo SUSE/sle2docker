@@ -1,6 +1,6 @@
 require_relative 'test_helper'
 
-# rubocop:disable Metrics/ClassLength, Style/Documentation, Metrics/LineLength, Style/MethodCallParentheses:
+# rubocop:disable Metrics/LineLength, Style/MethodCallParentheses:
 class PrebuiltImageTest < MiniTest::Test
   describe 'PrebuiltImage' do
     before do
@@ -69,11 +69,11 @@ EOF
         tmp_dir = '/foo'
         mocked_image = mock()
         mocked_image.expects(:tag)
-          .with('repo' => 'suse/sles12', 'tag' => '1.0.0')
-          .once
+                    .with('repo' => 'suse/sles12', 'tag' => '1.0.0')
+                    .once
         mocked_image.expects(:tag)
-          .with('repo' => 'suse/sles12', 'tag' => 'latest')
-          .once
+                    .with('repo' => 'suse/sles12', 'tag' => 'latest')
+                    .once
 
         prebuilt_image = Sle2Docker::PrebuiltImage.new(
           'sles12-docker.x86_64-1.0.0-Build7.2',

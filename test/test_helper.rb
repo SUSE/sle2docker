@@ -7,8 +7,7 @@ require 'minitest/autorun'
 require 'stringio'
 require 'fakefs/safe'
 
-# rubocop:disable Style/Documentation, Lint/Eval
-
+# rubocop:disable Lint/Eval
 class Object
   def capture(stream)
     begin
@@ -22,6 +21,7 @@ class Object
     result
   end
 end
+# rubocop:enable Lint/Eval
 
 module MiniTest
   class Test

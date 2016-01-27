@@ -2,7 +2,7 @@ module Sle2Docker
   # This class takes care of handling the pre-build images for
   # SUSE Linux Enterprise
   class PrebuiltImage
-    IMAGES_DIR = '/usr/share/suse-docker-images'
+    IMAGES_DIR = '/usr/share/suse-docker-images'.freeze
     DOCKERFILE_TEMPLATE = File.join(
       File.expand_path('../../templates/docker_build', __FILE__),
       'dockerfile.erb')
@@ -30,11 +30,6 @@ module Sle2Docker
     end
 
     def activate
-      unless File.exist?(File.join(IMAGES_DIR, "#{@image_name}.tar.xz"))
-        fail PrebuiltImageNotFoundError,
-             "Cannot find pre-built image #{@image_name}"
-      end
-
       verify_image
 
       tmp_dir = prepare_docker_build_root
@@ -54,18 +49,16 @@ module Sle2Docker
       tmp_dir
     end
 
-    # rubocop:disable Lint/UselessAssignment
     def create_dockerfile(tmp_dir)
       prebuilt_image = @image_name + '.tar.xz'
 
       template = ERB.new(File.read(DOCKERFILE_TEMPLATE), nil, '<>')
-                 .result(binding)
+                    .result(binding)
 
       File.open(File.join(tmp_dir, 'Dockerfile'), 'w') do |file|
         file.write(template)
       end
     end
-    # rubocop:enable Lint/UselessAssignment
 
     def copy_prebuilt_image(tmp_dir)
       prebuilt_image = File.join(IMAGES_DIR, "#{@image_name}.tar.xz")
@@ -83,7 +76,15 @@ module Sle2Docker
       package_name
     end
 
+    def check_image_exists
+      msg = "Cannot find pre-built image #{@image_name}"
+      fail(PrebuiltImageNotFoundError, msg) unless File.exist?(
+        File.join(IMAGES_DIR, "#{@image_name}.tar.xz"))
+    end
+
     def verify_image
+      check_image_exists
+
       puts 'Verifying integrity of the pre-built image'
       package_name = rpm_package_name
       verification = `rpm --verify #{package_name}`
@@ -109,6 +110,5 @@ module Sle2Docker
       @tag        = match['version']
       @image_id   = "#{@repository}:#{@tag}"
     end
-
   end
 end
