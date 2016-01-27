@@ -1,6 +1,10 @@
 language: ruby
 rvm:
-- 2.1.2
+  - 2.1.2
+script:
+  - bundle exec rake test
+  - bundle exec rubocop -V
+  - bundle exec rubocop -F
 addons:
   code_climate:
     repo_token:
