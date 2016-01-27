@@ -16,17 +16,31 @@ module Sle2Docker
     end
 
     desc 'activate IMAGE_NAME', 'Activate a pre-built image'
-    def activate(image_name)
+    method_option :all,
+      desc:    "Activate all the available pre-built images",
+      type:    :boolean,
+      default: false,
+      aliases: "-a"
+    def activate(image_name = nil)
       ensure_can_access_dockerd
 
-      prebuilt_image = Sle2Docker::PrebuiltImage.new(image_name, options)
-      if prebuilt_image.activated?
-        warn 'Image has already been activated. Exiting'
-        exit(0)
+      if options["all"]
+        prebuilt_images = PrebuiltImage.list.map { |img| Sle2Docker::PrebuiltImage.new(img, options) }
+      elsif !image_name.nil?
+        prebuilt_images = [Sle2Docker::PrebuiltImage.new(image_name, options)]
+      else
+        puts "You have to specify an image name."
+        exit 1
       end
 
-      prebuilt_image.activate
-      puts "#{prebuilt_image.image_id} activated"
+      prebuilt_images.each do |image|
+        if image.activated?
+          warn "Image '#{image.image_id}' has already been activated."
+        else
+          image.activate
+          puts "#{image.image_id} activated"
+        end
+      end
     end
 
     map '-v' => :version

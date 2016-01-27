@@ -39,6 +39,10 @@ To activate the pre-built image use the following command:
 
 `sle2docker activate IMAGE_NAME`
 
+To activate all the available pre-built images use the following command:
+
+`sle2docker activate --all` or `sle2docker activate -a`
+
 ## Customizing the images
 
 To create custom Docker images based on the official ones use
