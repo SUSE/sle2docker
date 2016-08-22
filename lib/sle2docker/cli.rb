@@ -22,6 +22,13 @@ module Sle2Docker
                   type:    :boolean,
                   default: false,
                   aliases: '-a'
+
+    method_option :tag_with_build,
+                  desc:    'Include kiwi build number into tag',
+                  type:    :boolean,
+                  default: false,
+                  aliases: '-b'
+
     def activate(image_name = nil)
       ensure_can_access_dockerd
 
@@ -48,7 +55,7 @@ module Sle2Docker
 
     def ensure_can_access_dockerd
       output = `docker info`
-      fail output if $CHILD_STATUS.exitstatus != 0
+      raise output if $CHILD_STATUS.exitstatus.nonzero?
     end
 
     def activate_images(images)

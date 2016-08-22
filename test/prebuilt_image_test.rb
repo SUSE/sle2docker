@@ -4,7 +4,7 @@ require_relative 'test_helper'
 class PrebuiltImageTest < MiniTest::Test
   describe 'PrebuiltImage' do
     before do
-      @options = { password: '' }
+      @options = { password: '', tag_with_build: false }
     end
 
     after do
@@ -39,6 +39,18 @@ class PrebuiltImageTest < MiniTest::Test
           assert_equal expected, actual
         end
       end
+    end
+  end
+end
+
+class PrebuiltImageTest < MiniTest::Test
+  describe 'PrebuiltImage' do
+    before do
+      @options = { password: '', tag_with_build: false }
+    end
+
+    after do
+      FakeFS::FileSystem.clear
     end
 
     describe 'activation' do
@@ -77,6 +89,54 @@ EOF
 
         prebuilt_image = Sle2Docker::PrebuiltImage.new(
           'sles12-docker.x86_64-1.0.0-Build7.2',
+          @options
+        )
+        prebuilt_image.expects(:prepare_docker_build_root).once.returns(tmp_dir)
+        prebuilt_image.expects(:verify_image).once
+        Docker::Image.expects(:build_from_dir).with(tmp_dir).once.returns(mocked_image)
+        FileUtils.expects(:rm_rf).with(tmp_dir).once
+
+        prebuilt_image.activate
+      end
+
+      it 'triggers docker build and tags with build #' do
+        @options['tag_with_build'] = true
+        File.stubs(:exist?).returns(true)
+        tmp_dir = '/foo'
+        mocked_image = mock()
+        mocked_image.expects(:tag)
+                    .with('repo' => 'suse/sles12', 'tag' => '1.0.0-7.2')
+                    .once
+        mocked_image.expects(:tag)
+                    .with('repo' => 'suse/sles12', 'tag' => 'latest')
+                    .once
+
+        prebuilt_image = Sle2Docker::PrebuiltImage.new(
+          'sles12-docker.x86_64-1.0.0-Build7.2',
+          @options
+        )
+        prebuilt_image.expects(:prepare_docker_build_root).once.returns(tmp_dir)
+        prebuilt_image.expects(:verify_image).once
+        Docker::Image.expects(:build_from_dir).with(tmp_dir).once.returns(mocked_image)
+        FileUtils.expects(:rm_rf).with(tmp_dir).once
+
+        prebuilt_image.activate
+      end
+
+      it 'triggers docker build and tags with build# (build# empty)' do
+        @options['tag_with_build'] = true
+        File.stubs(:exist?).returns(true)
+        tmp_dir = '/foo'
+        mocked_image = mock()
+        mocked_image.expects(:tag)
+                    .with('repo' => 'suse/sles12', 'tag' => '1.0.0-0.0')
+                    .once
+        mocked_image.expects(:tag)
+                    .with('repo' => 'suse/sles12', 'tag' => 'latest')
+                    .once
+
+        prebuilt_image = Sle2Docker::PrebuiltImage.new(
+          'sles12-docker.x86_64-1.0.0-Build',
           @options
         )
         prebuilt_image.expects(:prepare_docker_build_root).once.returns(tmp_dir)
