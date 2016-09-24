@@ -5,7 +5,8 @@ module Sle2Docker
     IMAGES_DIR = '/usr/share/suse-docker-images'.freeze
     DOCKERFILE_TEMPLATE = File.join(
       File.expand_path('../../templates/docker_build', __FILE__),
-      'dockerfile.erb')
+      'dockerfile.erb'
+    )
 
     attr_reader :image_id
 
@@ -69,17 +70,22 @@ module Sle2Docker
     def rpm_package_name
       file = File.join(IMAGES_DIR, "#{@image_name}.tar.xz")
       package_name = `rpm -qf #{file}`
-      if $CHILD_STATUS.exitstatus != 0
-        fail PrebuiltImageVerificationError,
-             "Cannot find rpm package providing #{file}: #{package_name}"
+      if $CHILD_STATUS.exitstatus.nonzero?
+        raise(
+          PrebuiltImageVerificationError,
+          "Cannot find rpm package providing #{file}: #{package_name}"
+        )
       end
       package_name
     end
 
     def check_image_exists
       msg = "Cannot find pre-built image #{@image_name}"
-      fail(PrebuiltImageNotFoundError, msg) unless File.exist?(
-        File.join(IMAGES_DIR, "#{@image_name}.tar.xz"))
+      raise(
+        PrebuiltImageNotFoundError, msg
+      ) unless File.exist?(
+        File.join(IMAGES_DIR, "#{@image_name}.tar.xz")
+      )
     end
 
     def verify_image
@@ -88,10 +94,10 @@ module Sle2Docker
       puts 'Verifying integrity of the pre-built image'
       package_name = rpm_package_name
       verification = `rpm --verify #{package_name}`
-      if $CHILD_STATUS.exitstatus != 0
-        fail PrebuiltImageVerificationError,
-             "Verification of #{package_name} failed: #{verification}"
-      end
+      raise(
+        PrebuiltImageVerificationError,
+        "Verification of #{package_name} failed: #{verification}"
+      ) if $CHILD_STATUS.exitstatus.nonzero?
       true
     end
 
@@ -99,16 +105,17 @@ module Sle2Docker
 
     def compute_repository_and_tag
       # example of image name: sles12-docker.x86_64-1.0.0-Build7.2
-      regexp = /\A(?<name>.*)-docker\..*-(?<version>\d+\.\d+\.\d+)/
+      regexp = /\A(?<name>.*)-docker\..*-(?<version>\d+\.\d+\.\d+)
+       (-Build(?<build>\d+\.\d+)?)?/x
       match = regexp.match(@image_name)
-      if match.nil?
-        fail DockerTagError,
-             "Cannot calculate the Docker tag for #{@image_name}"
-      end
+      match.nil? &&
+        raise(DockerTagError,
+              "Cannot calculate the Docker tag for #{@image_name}")
 
       @repository = "suse/#{match['name']}"
       @tag        = match['version']
-      @image_id   = "#{@repository}:#{@tag}"
+      @options['tag_with_build'] && @tag << '-' + (match['build'] || '0.0')
+      @image_id = "#{@repository}:#{@tag}"
     end
   end
 end
