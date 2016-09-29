@@ -110,7 +110,8 @@ module Sle2Docker
       match = regexp.match(@image_name)
       match.nil? &&
         raise(DockerTagError,
-              "Cannot calculate the Docker tag for #{@image_name}")
+              "Docker image #{@image_name} not found. \
+               Run sle2docker list to check which docker images are available.")
 
       @repository = "suse/#{match['name']}"
       @tag        = match['version']
