@@ -3,3 +3,5 @@ AllCops:
     - Vagrantfile
     - sle2docker.gemspec
     - lib/templates/**/*
+Metrics/MethodLength:
+  Max: 15
