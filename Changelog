@@ -1,3 +1,15 @@
+Wed Oct 05 11:05:30 CET 2016  Miquel Sabaté <msabate@suse.com>
+
+	* Version 0.5.0:
+		- Added the --all option to the activate command. With this
+		  options you can tell sle2docker to activate all the
+		  available images (see 43558fdcc9a4bc2f66f01ea8e5d9d2734722d0a6).
+		- Added the --tag_with_build flag to include the obs build
+		  number of kiwi generated images in the docker tag
+		  (see d577bab99b427de339b91182e708eaaab8d9ae87).
+		- Clarified error message on missing Docker images
+		  (see 591ac6c1aa60b089f6a09d608004514a59614882).
+
 Tue Nov 10 17:58:30 CET 2015  Flavio Castelli <fcastelli@suse.com>
 
 	* Version 0.4.2:
