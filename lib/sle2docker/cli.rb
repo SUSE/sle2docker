@@ -1,6 +1,8 @@
 module Sle2Docker
   # Entry point of the command line interface
   class Cli < Thor
+    check_unknown_options!
+
     desc 'list', 'List available pre-built images'
     def list
       puts 'Available pre-built images:'
