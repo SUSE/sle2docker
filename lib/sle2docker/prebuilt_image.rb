@@ -104,8 +104,12 @@ module Sle2Docker
     private
 
     def compute_repository_and_tag
-      # example of image name: sles12-docker.x86_64-1.0.0-Build7.2
-      regexp = /\A(?<name>.*)-docker\..*-(?<version>\d+\.\d+\.\d+)
+      # example of image name:
+      # kiwi < 8.0 :
+      #      sles12-docker.x86_64-1.0.0-Build7.2
+      # kiwi >= 8.0
+      #      obs-source-service.x86_64-1.0.0-Build3.1.docker
+      regexp = /\A(?<name>.*)(-docker)?\..*-(?<version>\d+\.\d+\.\d+)
        (-Build(?<build>\d+\.\d+)?)?/x
       match = regexp.match(@image_name)
       match.nil? &&
