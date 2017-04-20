@@ -56,7 +56,7 @@ module Sle2Docker
     private
 
     def ensure_can_access_dockerd
-      output = `docker info 2>/dev/null`
+      output = `docker info 2>&1`
       raise output if $CHILD_STATUS.exitstatus.nonzero?
     end
 
