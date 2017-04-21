@@ -81,10 +81,8 @@ module Sle2Docker
 
     def check_image_exists
       msg = "Cannot find pre-built image #{@image_name}"
-      raise(
-        PrebuiltImageNotFoundError, msg
-      ) unless File.exist?(
-        File.join(IMAGES_DIR, "#{@image_name}.tar.xz")
+      raise(PrebuiltImageNotFoundError, msg) unless File.exist? File.join(
+        IMAGES_DIR, "#{@image_name}.tar.xz"
       )
     end
 
@@ -94,10 +92,10 @@ module Sle2Docker
       puts 'Verifying integrity of the pre-built image'
       package_name = rpm_package_name
       verification = `rpm --verify #{package_name}`
-      raise(
-        PrebuiltImageVerificationError,
-        "Verification of #{package_name} failed: #{verification}"
-      ) if $CHILD_STATUS.exitstatus.nonzero?
+      if $CHILD_STATUS.exitstatus.nonzero?
+        raise(PrebuiltImageVerificationError,
+              "Verification of #{package_name} failed: #{verification}")
+      end
       true
     end
 

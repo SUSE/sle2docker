@@ -1,5 +1,5 @@
-require 'codeclimate-test-reporter'
-CodeClimate::TestReporter.start
+require 'simplecov'
+SimpleCov.start
 
 require File.expand_path('../../lib/sle2docker', __FILE__)
 
@@ -7,7 +7,7 @@ require 'minitest/autorun'
 require 'stringio'
 require 'fakefs/safe'
 
-# rubocop:disable Lint/Eval
+# rubocop:disable Security/Eval
 class Object
   def capture(stream)
     begin
@@ -21,7 +21,7 @@ class Object
     result
   end
 end
-# rubocop:enable Lint/Eval
+# rubocop:enable Security/Eval
 
 module MiniTest
   class Test
