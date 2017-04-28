@@ -1,6 +1,6 @@
 require_relative 'test_helper'
 
-# rubocop:disable Metrics/LineLength, Style/MethodCallParentheses:
+# rubocop:disable Metrics/LineLength, Metrics/BlockLength
 class PrebuiltImageTest < MiniTest::Test
   describe 'PrebuiltImage' do
     before do
@@ -43,6 +43,7 @@ class PrebuiltImageTest < MiniTest::Test
   end
 end
 
+# rubocop:disable Style/IndentHeredoc
 class PrebuiltImageTest < MiniTest::Test
   describe 'PrebuiltImage' do
     before do
@@ -72,19 +73,19 @@ EOF
           assert File.exist?(dockerfile)
           assert_equal(expected, File.read(dockerfile))
         ensure
-          FileUtils.rm_rf(tmp_dir) if File.exist?(tmp_dir)
+          FileUtils.rm_rf(tmp_dir) if tmp_dir && File.exist?(tmp_dir)
         end
       end
 
       it 'triggers docker build' do
         File.stubs(:exist?).returns(true)
         tmp_dir = '/foo'
-        mocked_image = mock()
+        mocked_image = mock
         mocked_image.expects(:tag)
-                    .with('repo' => 'suse/sles12', 'tag' => '1.0.0')
+                    .with('repo' => 'suse/sles12-docker', 'tag' => '1.0.0')
                     .once
         mocked_image.expects(:tag)
-                    .with('repo' => 'suse/sles12', 'tag' => 'latest')
+                    .with('repo' => 'suse/sles12-docker', 'tag' => 'latest')
                     .once
 
         prebuilt_image = Sle2Docker::PrebuiltImage.new(
@@ -103,12 +104,12 @@ EOF
         @options['tag_with_build'] = true
         File.stubs(:exist?).returns(true)
         tmp_dir = '/foo'
-        mocked_image = mock()
+        mocked_image = mock
         mocked_image.expects(:tag)
-                    .with('repo' => 'suse/sles12', 'tag' => '1.0.0-7.2')
+                    .with('repo' => 'suse/sles12-docker', 'tag' => '1.0.0-7.2')
                     .once
         mocked_image.expects(:tag)
-                    .with('repo' => 'suse/sles12', 'tag' => 'latest')
+                    .with('repo' => 'suse/sles12-docker', 'tag' => 'latest')
                     .once
 
         prebuilt_image = Sle2Docker::PrebuiltImage.new(
@@ -127,12 +128,12 @@ EOF
         @options['tag_with_build'] = true
         File.stubs(:exist?).returns(true)
         tmp_dir = '/foo'
-        mocked_image = mock()
+        mocked_image = mock
         mocked_image.expects(:tag)
-                    .with('repo' => 'suse/sles12', 'tag' => '1.0.0-0.0')
+                    .with('repo' => 'suse/sles12-docker', 'tag' => '1.0.0-0.0')
                     .once
         mocked_image.expects(:tag)
-                    .with('repo' => 'suse/sles12', 'tag' => 'latest')
+                    .with('repo' => 'suse/sles12-docker', 'tag' => 'latest')
                     .once
 
         prebuilt_image = Sle2Docker::PrebuiltImage.new(
