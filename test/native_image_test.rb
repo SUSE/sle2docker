@@ -41,6 +41,10 @@ end
 
 class NativeImageTest < MiniTest::Test
   describe 'NativeImage' do
+    before do
+      @options = { tag_with_build: false }
+    end
+
     describe 'activation' do
       it 'triggers docker load' do
         image_file = '/usr/share/suse-docker-images/native/'\
@@ -57,7 +61,34 @@ class NativeImageTest < MiniTest::Test
                     .once
         Docker::Image.expects(:get).with('repo:tag1').once.returns(mocked_image)
         native_image = Sle2Docker::NativeImage.new(
-          'sles12sp3-container.x86_64-2.0.1-Build2.3.docker'
+          'sles12sp3-container.x86_64-2.0.1-Build2.3.docker',
+          @options
+        )
+        native_image.expects(:verify_image).once
+        native_image.activate
+      end
+
+      it 'triggers docker load and tags with build' do
+        @options['tag_with_build'] = true
+        image_file = '/usr/share/suse-docker-images/native/'\
+                     'sles12sp3-container.x86_64-2.0.1-Build2.3.docker.tar.xz'
+        File.stubs(:exist?).returns(false)
+        File.stubs(:exist?).with(image_file).returns(true)
+        Docker::Image.expects(:load).with(image_file).once.returns(true)
+        File.stubs(:read).returns(
+          '{"image": {"name": "repo", "tags": ["tag1","tag2"]}}'
+        )
+        mocked_image = mock
+        mocked_image.expects(:tag)
+                    .with('repo' => 'repo', 'tag' => 'latest')
+                    .once
+        mocked_image.expects(:tag)
+                    .with('repo' => 'repo', 'tag' => 'tag1-2.3')
+                    .once
+        Docker::Image.expects(:get).with('repo:tag1').once.returns(mocked_image)
+        native_image = Sle2Docker::NativeImage.new(
+          'sles12sp3-container.x86_64-2.0.1-Build2.3.docker',
+          @options
         )
         native_image.expects(:verify_image).once
         native_image.activate

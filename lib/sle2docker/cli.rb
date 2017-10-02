@@ -35,9 +35,9 @@ module Sle2Docker
     def activate(image_name = nil)
       ensure_can_access_dockerd
       if options['all']
-        activate_all
+        activate_all(options)
       elsif !image_name.nil?
-        activate_image(image_name)
+        activate_image(image_name, options)
       else
         puts 'You have to specify an image name.'
         exit 1
@@ -52,23 +52,24 @@ module Sle2Docker
 
     private
 
-    def activate_all
+    def activate_all(options)
       native_images = NativeImage.list
       prebuilt_images = PrebuiltImage.list
       images = prebuilt_images
                .map { |img| Sle2Docker::PrebuiltImage.new(img, options) }
-      images += native_images.map { |img| Sle2Docker::NativeImage.new(img) }
+      images += native_images
+                .map { |img| Sle2Docker::NativeImage.new(img, options) }
       activate_images(images)
     end
 
-    def activate_image(image_name)
+    def activate_image(image_name, options)
       native_images = NativeImage.list
       prebuilt_images = PrebuiltImage.list
 
       if prebuilt_images.include?(image_name)
         activate_images([Sle2Docker::PrebuiltImage.new(image_name, options)])
       elsif native_images.include?(image_name)
-        activate_images([Sle2Docker::NativeImage.new(image_name)])
+        activate_images([Sle2Docker::NativeImage.new(image_name, options)])
       else
         puts 'You have to specify an existing image name.'
         exit 1

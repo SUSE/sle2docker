@@ -14,8 +14,9 @@ module Sle2Docker
       end
     end
 
-    def initialize(image_name)
+    def initialize(image_name, options)
       @image_name = image_name
+      @options = options
       compute_metadata_file
     end
 
@@ -26,6 +27,8 @@ module Sle2Docker
       Docker::Image.load(File.join(IMAGES_DIR, "#{@image_name}.tar.xz"))
       image = Docker::Image.get(@image_id)
       image.tag('repo' => @repository, 'tag' => 'latest')
+      @options['tag_with_build'] &&
+        image.tag('repo' => @repository, 'tag' => "#{@tag}-#{@build}")
     end
 
     private
@@ -35,19 +38,25 @@ module Sle2Docker
       # kiwi >= 8.30
       #      sles12sp3-container.x86_64-2.0.1-Build2.3.docker (image basename)
       #      sles12sp3-container.x86_64-2.0.1.metadata
-      regexp = /(?<metadata_file>.*\d+\.\d+\.\d+)(-Build\d+\.\d+\.docker)?/x
+      regexp = /(?<metadata_file>.*\d+\.\d+\.\d+)
+        (-Build(?<build>\d+\.\d+)\.docker)?/x
       match = regexp.match(@image_name)
       match.nil? &&
         raise(DockerTagError,
               "Docker image #{@image_name} not found. \
                Run sle2docker list to check which docker images are available.")
-      file = File.read(
-        File.join(NativeImage::IMAGES_DIR, "#{match['metadata_file']}.metadata")
-      )
-      @metadata     = JSON.parse(file)
+      @metadata     = parse_metadata_file("#{match['metadata_file']}.metadata")
       @repository   = @metadata['image']['name']
       @tag          = @metadata['image']['tags'][0]
+      @build        = match['build']
       @image_id     = "#{@repository}:#{@tag}"
+    end
+
+    def parse_metadata_file(metadata)
+      file = File.read(
+        File.join(NativeImage::IMAGES_DIR, metadata)
+      )
+      JSON.parse(file)
     end
   end
 end
