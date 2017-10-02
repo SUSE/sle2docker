@@ -59,12 +59,12 @@ class PrebuiltImageTest < MiniTest::Test
         begin
           image = 'sles12-docker.x86_64-1.0.0-Build7.2'
           prebuilt_image = Sle2Docker::PrebuiltImage.new(image, @options)
-          expected = <<EOF
+          expected = <<DOCKERFILE
 FROM scratch
 MAINTAINER "Flavio Castelli <fcastelli@suse.com>"
 
 ADD sles12-docker.x86_64-1.0.0-Build7.2.tar.xz /
-EOF
+DOCKERFILE
 
           tmp_dir = Dir.mktmpdir('sle2docker-test')
           prebuilt_image.create_dockerfile(tmp_dir)
@@ -92,8 +92,14 @@ EOF
           'sles12-docker.x86_64-1.0.0-Build7.2',
           @options
         )
+        img_file = File.join(
+          Sle2Docker::PrebuiltImage::IMAGES_DIR,
+          'sles12-docker.x86_64-1.0.0-Build7.2.tar.xz'
+        )
         prebuilt_image.expects(:prepare_docker_build_root).once.returns(tmp_dir)
-        prebuilt_image.expects(:verify_image).once
+        prebuilt_image.expects(:`).with("rpm -qf #{img_file}")
+                      .once.returns('sles12-docker')
+        prebuilt_image.expects(:`).with('rpm --verify sles12-docker').once
         Docker::Image.expects(:build_from_dir).with(tmp_dir).once.returns(mocked_image)
         FileUtils.expects(:rm_rf).with(tmp_dir).once
 
