@@ -6,16 +6,14 @@ module Sle2Docker
     desc 'list', 'List available pre-built images'
     def list
       puts 'Available pre-built images:'
-      prebuilt_images = PrebuiltImage.list
-      native_images = NativeImage.list
-      if prebuilt_images.empty? && native_images.empty?
+      images = PrebuiltImage.list + NativeImage.list
+      if images.empty?
         puts 'No pre-built image found.'
         puts "\nPre-built images can be installed from SLE12 Update " \
           'repository using zypper:'
         puts '  zypper install \"sle*-docker-image\"'
       else
-        prebuilt_images.each { |image| puts " - #{image}" }
-        native_images.each { |image| puts " - #{image}" }
+        images.each { |image| puts " - #{image}" }
       end
     end
 
@@ -53,22 +51,17 @@ module Sle2Docker
     private
 
     def activate_all(options)
-      native_images = NativeImage.list
-      prebuilt_images = PrebuiltImage.list
-      images = prebuilt_images
-               .map { |img| Sle2Docker::PrebuiltImage.new(img, options) }
-      images += native_images
-                .map { |img| Sle2Docker::NativeImage.new(img, options) }
+      images = PrebuiltImage
+               .list.map { |img| Sle2Docker::PrebuiltImage.new(img, options) }
+      images += NativeImage
+                .list.map { |img| Sle2Docker::NativeImage.new(img, options) }
       activate_images(images)
     end
 
     def activate_image(image_name, options)
-      native_images = NativeImage.list
-      prebuilt_images = PrebuiltImage.list
-
-      if prebuilt_images.include?(image_name)
+      if PrebuiltImage.list.include?(image_name)
         activate_images([Sle2Docker::PrebuiltImage.new(image_name, options)])
-      elsif native_images.include?(image_name)
+      elsif NativeImage.list.include?(image_name)
         activate_images([Sle2Docker::NativeImage.new(image_name, options)])
       else
         puts 'You have to specify an existing image name.'
