@@ -1,7 +1,7 @@
 module Sle2Docker
   # This class takes care of handling the pre-build images for
   # SUSE Linux Enterprise
-  class PrebuiltImage < Image
+  class RootFSImage < Image
     IMAGES_DIR = '/usr/share/suse-docker-images'.freeze
     DOCKERFILE_TEMPLATE = File.join(
       File.expand_path('../../templates/docker_build', __FILE__),
@@ -9,8 +9,8 @@ module Sle2Docker
     )
 
     def self.list
-      if File.exist?(PrebuiltImage::IMAGES_DIR)
-        Dir[File.join(PrebuiltImage::IMAGES_DIR, '*.tar.xz')].map do |image|
+      if File.exist?(RootFSImage::IMAGES_DIR)
+        Dir[File.join(RootFSImage::IMAGES_DIR, '*.tar.xz')].map do |image|
           File.basename(image, '.tar.xz')
         end
       else

@@ -6,7 +6,7 @@ module Sle2Docker
     desc 'list', 'List available pre-built images'
     def list
       puts 'Available pre-built images:'
-      images = PrebuiltImage.list + NativeImage.list
+      images = RootFSImage.list + NativeImage.list
       if images.empty?
         puts 'No pre-built image found.'
         puts "\nPre-built images can be installed from SLE12 Update " \
@@ -51,16 +51,16 @@ module Sle2Docker
     private
 
     def activate_all(options)
-      images = PrebuiltImage
-               .list.map { |img| Sle2Docker::PrebuiltImage.new(img, options) }
+      images = RootFSImage
+               .list.map { |img| Sle2Docker::RootFSImage.new(img, options) }
       images += NativeImage
                 .list.map { |img| Sle2Docker::NativeImage.new(img, options) }
       activate_images(images)
     end
 
     def activate_image(image_name, options)
-      if PrebuiltImage.list.include?(image_name)
-        activate_images([Sle2Docker::PrebuiltImage.new(image_name, options)])
+      if RootFSImage.list.include?(image_name)
+        activate_images([Sle2Docker::RootFSImage.new(image_name, options)])
       elsif NativeImage.list.include?(image_name)
         activate_images([Sle2Docker::NativeImage.new(image_name, options)])
       else

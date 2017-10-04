@@ -1,8 +1,8 @@
 require_relative 'test_helper'
 
 # rubocop:disable Metrics/LineLength, Metrics/BlockLength
-class PrebuiltImageTest < MiniTest::Test
-  describe 'PrebuiltImage' do
+class RootFSImageTest < MiniTest::Test
+  describe 'RootFSImage' do
     before do
       @options = { password: '', tag_with_build: false }
     end
@@ -13,7 +13,7 @@ class PrebuiltImageTest < MiniTest::Test
 
     describe 'listing' do
       it 'works when no pre-built image is available' do
-        actual = Sle2Docker::PrebuiltImage.list
+        actual = Sle2Docker::RootFSImage.list
         expected = []
         assert_equal expected, actual
       end
@@ -25,17 +25,17 @@ class PrebuiltImageTest < MiniTest::Test
             'sles12-docker.x86_64-1.0.0-Build7.2'
           ]
 
-          FileUtils.mkdir_p(Sle2Docker::PrebuiltImage::IMAGES_DIR)
+          FileUtils.mkdir_p(Sle2Docker::RootFSImage::IMAGES_DIR)
           expected.each do |image|
             FileUtils.touch(
               File.join(
-                Sle2Docker::PrebuiltImage::IMAGES_DIR,
+                Sle2Docker::RootFSImage::IMAGES_DIR,
                 "#{image}.tar.xz"
               )
             )
           end
 
-          actual = Sle2Docker::PrebuiltImage.list
+          actual = Sle2Docker::RootFSImage.list
           assert_equal expected, actual
         end
       end
@@ -44,8 +44,8 @@ class PrebuiltImageTest < MiniTest::Test
 end
 
 # rubocop:disable Style/IndentHeredoc
-class PrebuiltImageTest < MiniTest::Test
-  describe 'PrebuiltImage' do
+class RootFSImageTest < MiniTest::Test
+  describe 'RootFSImage' do
     before do
       @options = { password: '', tag_with_build: false }
     end
@@ -58,7 +58,7 @@ class PrebuiltImageTest < MiniTest::Test
       it 'creates a Dockerfile and builds the image' do
         begin
           image = 'sles12-docker.x86_64-1.0.0-Build7.2'
-          prebuilt_image = Sle2Docker::PrebuiltImage.new(image, @options)
+          prebuilt_image = Sle2Docker::RootFSImage.new(image, @options)
           expected = <<DOCKERFILE
 FROM scratch
 MAINTAINER "Flavio Castelli <fcastelli@suse.com>"
@@ -88,12 +88,12 @@ DOCKERFILE
                     .with('repo' => 'suse/sles12-docker', 'tag' => 'latest')
                     .once
 
-        prebuilt_image = Sle2Docker::PrebuiltImage.new(
+        prebuilt_image = Sle2Docker::RootFSImage.new(
           'sles12-docker.x86_64-1.0.0-Build7.2',
           @options
         )
         img_file = File.join(
-          Sle2Docker::PrebuiltImage::IMAGES_DIR,
+          Sle2Docker::RootFSImage::IMAGES_DIR,
           'sles12-docker.x86_64-1.0.0-Build7.2.tar.xz'
         )
         prebuilt_image.expects(:prepare_docker_build_root).once.returns(tmp_dir)
@@ -118,7 +118,7 @@ DOCKERFILE
                     .with('repo' => 'suse/sles12-docker', 'tag' => 'latest')
                     .once
 
-        prebuilt_image = Sle2Docker::PrebuiltImage.new(
+        prebuilt_image = Sle2Docker::RootFSImage.new(
           'sles12-docker.x86_64-1.0.0-Build7.2',
           @options
         )
@@ -142,7 +142,7 @@ DOCKERFILE
                     .with('repo' => 'suse/sles12-docker', 'tag' => 'latest')
                     .once
 
-        prebuilt_image = Sle2Docker::PrebuiltImage.new(
+        prebuilt_image = Sle2Docker::RootFSImage.new(
           'sles12-docker.x86_64-1.0.0-Build',
           @options
         )
