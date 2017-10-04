@@ -29,6 +29,7 @@ EOD
 
   s.add_runtime_dependency 'docker-api'
   s.add_runtime_dependency 'thor'
+  s.add_runtime_dependency 'json'
   s.add_development_dependency 'bundler'
   s.add_development_dependency 'fakefs'
   s.add_development_dependency 'minitest'

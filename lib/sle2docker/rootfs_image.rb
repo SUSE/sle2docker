@@ -1,18 +1,16 @@
 module Sle2Docker
   # This class takes care of handling the pre-build images for
   # SUSE Linux Enterprise
-  class PrebuiltImage
+  class RootFSImage < Image
     IMAGES_DIR = '/usr/share/suse-docker-images'.freeze
     DOCKERFILE_TEMPLATE = File.join(
       File.expand_path('../../templates/docker_build', __FILE__),
       'dockerfile.erb'
     )
 
-    attr_reader :image_id
-
     def self.list
-      if File.exist?(PrebuiltImage::IMAGES_DIR)
-        Dir[File.join(IMAGES_DIR, '*.tar.xz')].map do |image|
+      if File.exist?(RootFSImage::IMAGES_DIR)
+        Dir[File.join(RootFSImage::IMAGES_DIR, '*.tar.xz')].map do |image|
           File.basename(image, '.tar.xz')
         end
       else
@@ -26,18 +24,14 @@ module Sle2Docker
       compute_repository_and_tag
     end
 
-    def activated?
-      Docker::Image.exist?(image_id)
-    end
-
     def activate
       verify_image
 
       tmp_dir = prepare_docker_build_root
       puts 'Activating image'
       image = Docker::Image.build_from_dir(tmp_dir)
-      image.tag('repo' =>  @repository, 'tag' => @tag)
-      image.tag('repo' =>  @repository, 'tag' => 'latest')
+      image.tag('repo' => @repository, 'tag' => @tag)
+      image.tag('repo' => @repository, 'tag' => 'latest')
     ensure
       FileUtils.rm_rf(tmp_dir) if tmp_dir && File.exist?(tmp_dir)
     end
@@ -52,7 +46,6 @@ module Sle2Docker
 
     def create_dockerfile(tmp_dir)
       prebuilt_image = @image_name + '.tar.xz'
-
       template = ERB.new(File.read(DOCKERFILE_TEMPLATE), nil, '<>')
                     .result(binding)
 
@@ -65,38 +58,6 @@ module Sle2Docker
       prebuilt_image = File.join(IMAGES_DIR, "#{@image_name}.tar.xz")
       destination = File.join(tmp_dir, "#{@image_name}.tar.xz")
       FileUtils.cp(prebuilt_image, destination)
-    end
-
-    def rpm_package_name
-      file = File.join(IMAGES_DIR, "#{@image_name}.tar.xz")
-      package_name = `rpm -qf #{file}`
-      if $CHILD_STATUS.exitstatus.nonzero?
-        raise(
-          PrebuiltImageVerificationError,
-          "Cannot find rpm package providing #{file}: #{package_name}"
-        )
-      end
-      package_name
-    end
-
-    def check_image_exists
-      msg = "Cannot find pre-built image #{@image_name}"
-      raise(PrebuiltImageNotFoundError, msg) unless File.exist? File.join(
-        IMAGES_DIR, "#{@image_name}.tar.xz"
-      )
-    end
-
-    def verify_image
-      check_image_exists
-
-      puts 'Verifying integrity of the pre-built image'
-      package_name = rpm_package_name
-      verification = `rpm --verify #{package_name}`
-      if $CHILD_STATUS.exitstatus.nonzero?
-        raise(PrebuiltImageVerificationError,
-              "Verification of #{package_name} failed: #{verification}")
-      end
-      true
     end
 
     private
