@@ -82,10 +82,10 @@ DOCKERFILE
         tmp_dir = '/foo'
         mocked_image = mock
         mocked_image.expects(:tag)
-                    .with('repo' => 'suse/sles12-docker', 'tag' => '1.0.0')
+                    .with('repo' => 'suse/sles12', 'tag' => '1.0.0')
                     .once
         mocked_image.expects(:tag)
-                    .with('repo' => 'suse/sles12-docker', 'tag' => 'latest')
+                    .with('repo' => 'suse/sles12', 'tag' => 'latest')
                     .once
 
         prebuilt_image = Sle2Docker::RootFSImage.new(
@@ -112,10 +112,10 @@ DOCKERFILE
         tmp_dir = '/foo'
         mocked_image = mock
         mocked_image.expects(:tag)
-                    .with('repo' => 'suse/sles12-docker', 'tag' => '1.0.0-7.2')
+                    .with('repo' => 'suse/sles12', 'tag' => '1.0.0-7.2')
                     .once
         mocked_image.expects(:tag)
-                    .with('repo' => 'suse/sles12-docker', 'tag' => 'latest')
+                    .with('repo' => 'suse/sles12', 'tag' => 'latest')
                     .once
 
         prebuilt_image = Sle2Docker::RootFSImage.new(
@@ -136,10 +136,10 @@ DOCKERFILE
         tmp_dir = '/foo'
         mocked_image = mock
         mocked_image.expects(:tag)
-                    .with('repo' => 'suse/sles12-docker', 'tag' => '1.0.0-0.0')
+                    .with('repo' => 'suse/sles12', 'tag' => '1.0.0-0.0')
                     .once
         mocked_image.expects(:tag)
-                    .with('repo' => 'suse/sles12-docker', 'tag' => 'latest')
+                    .with('repo' => 'suse/sles12', 'tag' => 'latest')
                     .once
 
         prebuilt_image = Sle2Docker::RootFSImage.new(
