@@ -7,7 +7,7 @@ require 'minitest/autorun'
 require 'stringio'
 require 'fakefs/safe'
 
-# rubocop:disable Security/Eval
+# rubocop:disable Security/Eval, Style/EvalWithLocation
 class Object
   def capture(stream)
     begin
@@ -21,7 +21,7 @@ class Object
     result
   end
 end
-# rubocop:enable Security/Eval
+# rubocop:enable Security/Eval, Style/EvalWithLocation
 
 module MiniTest
   class Test

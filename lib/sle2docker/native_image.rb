@@ -43,9 +43,12 @@ module Sle2Docker
       match = regexp.match(@image_name)
       match.nil? &&
         raise(DockerTagError,
-              "Docker image #{@image_name} not found. \
-               Run sle2docker list to check which docker images are available.")
-      @metadata     = parse_metadata_file("#{match['metadata_file']}.metadata")
+              "Docker image #{@image_name} not found. "\
+              'Run sle2docker list to check which docker images are available.')
+      @metadata = parse_metadata_file("#{match['metadata_file']}.metadata")
+
+      validate_metadata(@metadata)
+
       @repository   = @metadata['image']['name']
       @tag          = @metadata['image']['tags'][0]
       @build        = match['build']
@@ -57,6 +60,17 @@ module Sle2Docker
         File.join(NativeImage::IMAGES_DIR, metadata)
       )
       JSON.parse(file)
+    end
+
+    def validate_metadata(metadata)
+      metadata['image']['tags'][0].to_s.empty? &&
+        raise(DockerTagError,
+              'Metadata file does not include a valid tag. '\
+              'Container tag cannot be null or an empty string.')
+      metadata['image']['name'].to_s.empty? &&
+        raise(DockerTagError,
+              'Metadata file does not include a valid image name. '\
+              'Image name cannot be null or an empty string.')
     end
   end
 end

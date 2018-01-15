@@ -93,6 +93,23 @@ class NativeImageTest < MiniTest::Test
         native_image.expects(:verify_image).once
         native_image.activate
       end
+
+      it 'triggers a DockerTagError exception' do
+        image_file = '/usr/share/suse-docker-images/native/'\
+                     'sles12sp3-container.x86_64-2.0.1-Build2.3.docker.tar.xz'
+        File.stubs(:exist?).returns(false)
+        File.stubs(:exist?).with(image_file).returns(true)
+        File.stubs(:read).returns(
+          '{"image": {"name": "repo", "tags": ["","tag2"]}}'
+        )
+        assert_raises Sle2Docker::DockerTagError do
+          Sle2Docker::NativeImage.new(
+            'sles12sp3-container.x86_64-2.0.1-Build2.3.docker',
+            @options
+          )
+        end
+      end
     end
   end
 end
+# rubocop:enable Metrics/BlockLength

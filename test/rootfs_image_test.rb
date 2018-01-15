@@ -156,3 +156,4 @@ DOCKERFILE
     end
   end
 end
+# rubocop:enable Style/IndentHeredoc, Metrics/LineLength, Metrics/BlockLength
