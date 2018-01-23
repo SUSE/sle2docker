@@ -50,6 +50,10 @@ module Sle2Docker
 
     private
 
+    def ensure_can_access_dockerd
+      Docker.info
+    end
+
     def activate_all(options)
       images = RootFSImage
                .list.map { |img| Sle2Docker::RootFSImage.new(img, options) }
@@ -67,11 +71,6 @@ module Sle2Docker
         puts 'You have to specify an existing image name.'
         exit 1
       end
-    end
-
-    def ensure_can_access_dockerd
-      output = `docker info 2>&1`
-      raise output if $CHILD_STATUS.exitstatus.nonzero?
     end
 
     def activate_images(images)

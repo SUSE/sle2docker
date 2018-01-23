@@ -25,7 +25,7 @@ module Sle2Docker
 
       puts 'Loading image'
       Docker::Image.load(File.join(IMAGES_DIR, "#{@image_name}.tar.xz"))
-      image = Docker::Image.get(@image_id)
+      image = Docker::Image.get("#{@repository}:#{@tag}")
       image.tag('repo' => @repository, 'tag' => 'latest')
       @options['tag_with_build'] &&
         image.tag('repo' => @repository, 'tag' => "#{@tag}-#{@build}")
@@ -34,35 +34,37 @@ module Sle2Docker
     private
 
     def compute_metadata_file
+      match = parse_image_filename(@image_name)
+      @metadata = parse_metadata_file("#{match['metadata_file']}.metadata")
+
+      @repository   = @metadata['image']['name']
+      @tag          = @metadata['image']['tags'][0]
+      @build        = match['build']
+      @image_id     = "#{@repository}:#{@tag}"
+      @options['tag_with_build'] && \
+        @image_id = "#{@repository}:#{@tag}-#{@build}"
+    end
+
+    def parse_image_filename(file)
       # example of image name and metadata file:
       # kiwi >= 8.30
       #      sles12sp3-container.x86_64-2.0.1-Build2.3.docker (image basename)
       #      sles12sp3-container.x86_64-2.0.1.metadata
       regexp = /(?<metadata_file>.*\d+\.\d+\.\d+)
         (-Build(?<build>\d+\.\d+)\.docker)?/x
-      match = regexp.match(@image_name)
+      match = regexp.match(file)
       match.nil? &&
         raise(DockerTagError,
-              "Docker image #{@image_name} not found. "\
+              "Docker image #{file} not found. "\
               'Run sle2docker list to check which docker images are available.')
-      @metadata = parse_metadata_file("#{match['metadata_file']}.metadata")
-
-      validate_metadata(@metadata)
-
-      @repository   = @metadata['image']['name']
-      @tag          = @metadata['image']['tags'][0]
-      @build        = match['build']
-      @image_id     = "#{@repository}:#{@tag}"
+      match
     end
 
-    def parse_metadata_file(metadata)
+    def parse_metadata_file(metadata_file)
       file = File.read(
-        File.join(NativeImage::IMAGES_DIR, metadata)
+        File.join(NativeImage::IMAGES_DIR, metadata_file)
       )
-      JSON.parse(file)
-    end
-
-    def validate_metadata(metadata)
+      metadata = JSON.parse(file)
       metadata['image']['tags'][0].to_s.empty? &&
         raise(DockerTagError,
               'Metadata file does not include a valid tag. '\
@@ -71,6 +73,7 @@ module Sle2Docker
         raise(DockerTagError,
               'Metadata file does not include a valid image name. '\
               'Image name cannot be null or an empty string.')
+      metadata
     end
   end
 end
