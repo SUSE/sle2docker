@@ -149,7 +149,7 @@ RUN zypper -n in vim
 # Additional documentation
 
 For more information visit the
-[SUSE's Docker documentation](https://www.suse.com/documentation/sles-12/dockerquick/data/dockerquick.html)
+[SUSE's Docker documentation](https://www.suse.com/documentation/sles-12/book_sles_docker/data/book_sles_docker.html)
 page.
 
 # License
